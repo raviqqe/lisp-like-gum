@@ -10,7 +10,7 @@ pub enum Message {
   Resume { to: Ref, reference: Ref, object: Box<Object> },
 
   Fish { from: ProcessorId },
-  Schedule { spark: Thunk, neighbors: Vec<Thunk> },
+  Schedule { task: Thunk, neighbors: Vec<Thunk> },
 
   IncreWeight { reference: Ref, delta: Weight },
   DecreWeight { reference: Ref, delta: Weight },
