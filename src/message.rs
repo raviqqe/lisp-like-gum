@@ -1,3 +1,4 @@
+use address::GlobalAddress;
 use object::Object;
 use reference::Ref;
 use thunk::Thunk;
@@ -6,14 +7,14 @@ use weight::Weight;
 
 
 pub enum Message {
-  Fetch { from: Ref, reference: Ref },
-  Resume { to: Ref, reference: Ref, object: Box<Object> },
+  Fetch { from: Ref, address: GlobalAddress },
+  Resume { to: Ref, address: GlobalAddress, object: Box<Object> },
 
   Fish { from: ProcessorId },
   Schedule { task: Thunk, neighbors: Vec<Thunk> },
 
-  IncreWeight { reference: Ref, delta: Weight },
-  DecreWeight { reference: Ref, delta: Weight },
+  IncreWeight { address: GlobalAddress, delta: Weight },
+  DecreWeight { address: GlobalAddress, delta: Weight },
 
   Ack { to: Ref },
   Finish,
