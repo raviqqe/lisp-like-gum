@@ -1,15 +1,23 @@
+extern crate num;
 #[macro_use]
 extern crate log as metalog;
 
-mod packet;
-mod processor;
-mod thunk;
+mod address;
+mod function;
 mod log;
-
-use processor::Processor;
+mod memory;
+mod message;
+mod object;
+mod processor;
+mod reference;
+mod result;
+mod thunk;
+mod transceiver;
+mod weight;
 
 
 fn main() {
   log::init("debug");
-  Processor::new().run();
+
+  Processor::new(0).run();
 }

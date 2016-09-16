@@ -1,12 +1,20 @@
+use network;
+
+
+pub type ProcessorId = u64;
+
 pub struct Processor {
+  id: ProcessorId,
+  memory: Memory,
+  transceiver: Transceiver,
 }
 
-
 impl Processor {
-  pub fn new() -> Self {
-    Processor {}
+  fn new(id: ProcessorId) -> Processor {
+    Processor { id: id, memory: Memory::new(id), transceiver: network::init() }
   }
 
-  pub fn run(&self) {
+  fn run(&mut self) {
+
   }
 }
