@@ -6,8 +6,10 @@ mod processor;
 mod thunk;
 mod log;
 
+use processor::Processor;
 
 
 fn main() {
   log::init("debug");
+  Processor::new().run();
 }
