@@ -1,4 +1,9 @@
-fn init(me: ProcessorId, ps: HashMap<ProcessorId, String>) -> Tranceiver {
-  Tranceiver::new(id)
+use processor::ProcessorId;
+use transceiver::Transceiver;
 
+
+
+fn init(my_id: ProcessorId, id_to_address: HashMap<ProcessorId, String>)
+    -> Tranceiver {
+  Transceiver::new(my_id)
 }

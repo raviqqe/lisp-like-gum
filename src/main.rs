@@ -1,4 +1,3 @@
-extern crate num;
 #[macro_use]
 extern crate log as metalog;
 
@@ -14,6 +13,9 @@ mod result;
 mod thunk;
 mod transceiver;
 mod weight;
+
+use processor::Processor;
+
 
 
 fn main() {
