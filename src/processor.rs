@@ -10,8 +10,12 @@ pub struct Processor {
 }
 
 impl Processor {
-  fn new(id: ProcessorId) -> Processor {
-    Processor { id: id, memory: Memory::new(id), transceiver: network::init() }
+  fn new(id: ProcessorId, ps: HashMap<Processor, String>) -> Processor {
+    Processor {
+      id: id,
+      memory: Memory::new(id),
+      transceiver: network::init(id, ps),
+    }
   }
 
   fn run(&mut self) {

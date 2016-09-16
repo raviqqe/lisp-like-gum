@@ -1,6 +1,10 @@
 pub enum Message {
-  Fish,
-  Schedule,
+  Fetch { from: Ref, to: Ref },
+  Resume { to: Ref, from: Ref, object: Box<Object> },
 
-  Ack { to: Ref }
+  Fish { from: ProcessorId },
+  Schedule { task: Thunk, thunks: Vec<Thunk> },
+
+  Ack { to: Ref },
+  Finish,
 }
