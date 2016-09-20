@@ -6,9 +6,10 @@ use weight::Weight;
 
 
 
+#[derive(Debug)]
 pub struct Ref {
   global_address: GlobalAddress,
-  weight: Weight,
+  pub weight: Weight,
 }
 
 impl Ref {
@@ -22,5 +23,15 @@ impl Ref {
 
   pub fn local_address(&self) -> LocalAddress {
     self.global_address.local_address
+  }
+
+  pub fn split(&mut self) -> Option<Self> {
+    match self.weight.split() {
+      Some(w) => Some(Ref {
+        global_address: self.global_address,
+        weight: w,
+      }),
+      None => None,
+    };
   }
 }

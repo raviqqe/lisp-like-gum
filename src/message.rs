@@ -14,7 +14,7 @@ pub enum Message {
   Schedule { task: Thunk, neighbors: Vec<Thunk> },
 
   IncreWeight { address: GlobalAddress, delta: Weight },
-  DecreWeight { address: GlobalAddress, delta: Weight },
+  DeleteRef { reference: Ref },
 
   Ack { to: Ref },
   Finish,

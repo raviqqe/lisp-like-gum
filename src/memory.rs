@@ -1,51 +1,57 @@
-use std::collections::BTreeMap;
-
-use address::LocalAddress;
+use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
 use reference::Ref;
 use weight::Weight;
 
 
 
+#[derive(Debug)]
+pub struct MemoryCell {
+  pub thunk: Thunk,
+  pub weight: Weight,
+}
+
+impl MemoryCell {
+  fn new(t: Thunk) -> MemoryCell {
+    MemoryCell {
+      thunk: t,
+      weight: Weight::new(),
+    }
+  }
+}
+
+#[derive(Debug)]
 pub struct Memory {
   proc_id: ProcessorId,
-  weights: BTreeMap<LocalAddress, Weight>
 }
 
 impl Memory {
   fn new(id: ProcessorId) -> Self {
-    Memory { id: id, weights: BTreeMap::new() }
+    Memory { proc_id: id }
   }
 
   fn store(&mut self, t: Thunk) -> Ref {
-    let r = Ref::new(self.proc_id, Box::into_raw(Box::new()));
-
-    self.weights.insert(r.local_address, r.weight);
-
-    r
+    Ref::new(self.proc_id, Box::into_raw(Box::new(MemoryCell::new(t))));
   }
 
   fn load<'a>(&self, r: Ref) -> Option<&'a mut Thunk> {
-    if r.proc_id != self.proc_id {
+    if r.proc_id() != self.proc_id {
       return None
     }
 
-    Some(&mut *(r.local_address as *mut Thunk))
+    Some(r.local_address().thunk)
   }
 
-  fn incre_weight(&mut self, r: Ref, dw: Weight) {
-    *self.weights.get_mut(r.local_address).unwrap() += dw;
+  fn incre_weight(&mut self, a: GlobalAddress, dw: Weight) {
+    r.local_address.weight += dw;
   }
 
-  fn decre_weight(&mut self, r: Ref, dw: Weight) {
-    let a = r.local_address;
-    let w = self.weights.get_mut(a).unwrap();
+  fn delete_ref(&mut self, r: Ref) {
+    let a = r.local_address();
+    a.weight -= r.weight;
 
-    if *w == dw {
-      self.weights.remove(a);
-      unsafe { Box::from_raw(a) };
-    } else {
-      *w -= dw;
+    if a.weight == 0 {
+      let _ = unsafe { Box::from_raw(a) };
     }
   }
 }
