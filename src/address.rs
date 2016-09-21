@@ -1,14 +1,13 @@
-use memory::MemoryCell;
 use processor::ProcessorId;
 use thunk::Thunk;
-use weight::Weight;
+use weighted::Weighted;
 
 
 
 pub type LocalAddress = u64;
 
 impl Deref for LocalAddress {
-  type Target = MemoryCell;
+  type Target = Weighted<Thunk>;
 
   fn deref(&self) -> &Self::Target {
     &*(self as *const Self::Target)
@@ -16,7 +15,7 @@ impl Deref for LocalAddress {
 }
 
 impl DerefMut for LocalAddress {
-  type Target = MemoryCell;
+  type Target = Weighted<Thunk>;
 
   fn deref_mut(&mut self) -> &mut Self::Target {
     &mut *(self as *mut Self::Target)
@@ -25,8 +24,8 @@ impl DerefMut for LocalAddress {
 
 #[derive(Clone, Copy, Debug)]
 pub struct GlobalAddress {
-  proc_id: ProcessorId,
-  local_address: LocalAddress,
+  pub proc_id: ProcessorId,
+  pub local_address: LocalAddress,
 }
 
 impl GlobalAddress {

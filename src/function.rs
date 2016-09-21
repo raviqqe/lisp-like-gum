@@ -1,8 +1,9 @@
-use processor::Processor;
 use reference::Ref;
-use result::Result;
-use thunk::Thunk;
+use memory::ThunkMemory;
+use message::Message;
+use thunk::ThunkValue;
 
 
 
-pub type Function = Fn (Processor, Ref) -> Result<Thunk>;
+pub type Func<T: ThunkMemory> = Fn (T, Ref) -> FuncResult;
+pub type FuncResult = Result<ThunkValue, Vec<Message>>;
