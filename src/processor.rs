@@ -28,11 +28,7 @@ impl Processor {
   }
 
   pub fn run_as_master(&mut self, source_code: &str) {
-    let (os, ts) = eval(expand_macros(read(source_code.into())));
-
-    for t in os.clone().extend(ts) {
-      self.memory.store(t)
-    }
+    let os = eval(self, expand_macros(self, read(self, source_code.into())));
 
     self.tasks.extend(os);
 

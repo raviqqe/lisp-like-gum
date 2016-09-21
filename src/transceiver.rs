@@ -1,4 +1,4 @@
-use processor::ProcessorId;
+use config::ProcessorId;
 
 
 
