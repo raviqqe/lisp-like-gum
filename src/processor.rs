@@ -13,7 +13,7 @@ use reference::Ref;
 pub type ProcessorId = u64;
 
 pub struct Processor {
-  id: ProcessorId,
+  pub id: ProcessorId,
   memory: Memory,
   tasks: VecDeque<Ref>,
   transceiver: Transceiver,

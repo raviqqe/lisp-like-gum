@@ -21,6 +21,11 @@ mod transceiver;
 mod weight;
 mod weighted;
 
+use std::fs::File;
+use std::str::FromStr;
+
+use doctop::{ArgvMap, Docopt};
+
 use processor::Processor;
 
 
@@ -30,14 +35,14 @@ fn get_args() -> ArgvMap {
 Lisp?
 
 Usage:
-  lisp [-l <log_level>] [-s <proc_id>] <filename>
+  lisp [-l <log_level>] [-p <proc_id>] <filename>
   lisp (-h | --help)
 
 Options:
   -l, --log-level <log_level>  Set log level. Valid values are \"error\"
                                (default), \"warn\", \"info\", \"debug\",
                                \"trace\", and \"off\".
-  -s, --slave <proc_id>
+  -p, --proc-id <proc_id>
   -h, --help  Show help.
 ";
 
@@ -51,20 +56,28 @@ fn main() {
 
   // read_config_file
 
-  let p = Processor::new(0 /* args.get_bool("--slave").into() */,
-                         vec!["tcp://127.0.0.1:1996"]);
+  let mut p = Processor::new(parse_proc_id(args.get_str("--proc-id")),
+                             vec!["tcp://127.0.0.1:1996"]);
 
   if p.id == 0 {
-    p.run_as_master();
+    p.run_as_master(&read_file(args.get_str("<filename>")));
   } else {
-
+    p.run_as_slave();
   }
 }
 
-fn read_file(fname: &str) -> String {
-  let mut s = String:new();
+fn read_file(f: &str) -> String {
+  let mut s = String::new();
 
-  File::open(fname).unwrap().read_to_string(&mut s).unwrap();
+  File::open(f).unwrap().read_to_string(&mut s).unwrap();
 
   s
+}
+
+fn parse_proc_id(s: &str) -> u64 {
+  if s == "" {
+    0
+  } else {
+    u64::from_str(s).unwrap()
+  }
 }
