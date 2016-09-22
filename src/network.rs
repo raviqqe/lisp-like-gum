@@ -3,7 +3,6 @@ use transceiver::Transceiver;
 
 
 
-pub fn init(my_id: ProcessorId, id_to_address: HashMap<ProcessorId, String>)
-    -> Tranceiver {
-  Transceiver::new(my_id)
+pub fn init(id: ProcessorId, peers: Vec<&str>) -> Transceiver {
+  Transceiver::new(id)
 }

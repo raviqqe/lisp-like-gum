@@ -1,10 +1,26 @@
+use std::ops::{Deref, DerefMut};
+use std::convert::{From, Into};
+
 use processor::ProcessorId;
 use thunk::Thunk;
 use weighted::Weighted;
 
 
 
-pub type LocalAddress = u64;
+#[derive(Debug, Clone, Copy)]
+pub struct LocalAddress(u64);
+
+impl From<u64> for LocalAddress {
+  fn from(n: u64) -> LocalAddress {
+    LocalAddress(n)
+  }
+}
+
+impl Into<u64> for LocalAddress {
+  fn into(self) -> u64 {
+    self.0
+  }
+}
 
 impl Deref for LocalAddress {
   type Target = Weighted<Thunk>;
@@ -15,10 +31,8 @@ impl Deref for LocalAddress {
 }
 
 impl DerefMut for LocalAddress {
-  type Target = Weighted<Thunk>;
-
-  fn deref_mut(&mut self) -> &mut Self::Target {
-    &mut *(self as *mut Self::Target)
+  fn deref_mut(&mut self) -> &mut Weighted<Thunk> {
+    &mut *(self as *mut Weighted<Thunk>)
   }
 }
 

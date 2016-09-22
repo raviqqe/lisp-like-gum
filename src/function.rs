@@ -6,5 +6,5 @@ use thunk::ThunkValue;
 
 
 
-pub type Func<T: ThunkMemory> = Fn (&T, Ref) -> FuncResult;
+pub type Func<T> where T: ThunkMemory = Fn (&T, Ref) -> FuncResult;
 pub type FuncResult = Result<ThunkValue, Vec<(ProcessorId, Message)>>;

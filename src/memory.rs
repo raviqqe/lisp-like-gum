@@ -4,7 +4,7 @@ use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
 use reference::Ref;
 use weight::Weight;
-use weithed::Weighted;
+use weighted::Weighted;
 use thunk::{Thunk, Waits};
 
 

@@ -1,4 +1,4 @@
-use config::ProcessorId;
+use processor::ProcessorId;
 use message::Message;
 use rand::random;
 
@@ -10,7 +10,7 @@ pub struct Transceiver {
 
 impl Transceiver {
   fn new(id: ProcessorId) -> Self {
-    Tranceiver { proc_id: id }
+    Transceiver { proc_id: id }
   }
 
   fn send(&self, m: Message) {

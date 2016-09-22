@@ -2,12 +2,15 @@ use std::collections::VecDeque;
 use std::thread::sleep;
 use std::time::Duration;
 
+use address::{GlobalAddress, LocalAddress};
 use functions::{eval, expand_macros, read};
 use memory::Memory;
 use message::Message::*;
 use network;
 use reference::Ref;
+use thunk::Thunk;
 use transceiver::Transceiver;
+use weight::Weight;
 
 
 
@@ -62,7 +65,7 @@ impl Processor {
           if let Thunk::Object(ref o) = *address {
             self.transceiver.send(Resume {
               to: from.local_address,
-              address: GlobalAddress::new(self.id, local_address),
+              address: GlobalAddress::new(self.id, address),
               object: o.clone(),
             });
           } else {
@@ -86,7 +89,7 @@ impl Processor {
           sleep(Duration::new(0, 1));
         }
         Schedule { task, neighbors } => {
-          for (a, t) in neightbors {
+          for (a, t) in neighbors {
             self.memory.store_global(a, t);
           }
 
