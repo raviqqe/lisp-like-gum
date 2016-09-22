@@ -1,2 +1,2 @@
-trait Object: Any {
+pub trait Object: Any {
 }

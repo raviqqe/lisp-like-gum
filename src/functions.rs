@@ -2,14 +2,14 @@ use function::FuncResult;
 
 
 
-fn expand_macros(r: Ref) -> FuncResult {
+pub fn expand_macros(r: Ref) -> FuncResult {
   r
 }
 
-fn read(r: Ref) -> FuncResult {
+pub fn read(r: Ref) -> FuncResult {
   r
 }
 
-fn eval(r: Ref) -> FuncResult {
+pub fn eval(r: Ref) -> FuncResult {
   r
 }

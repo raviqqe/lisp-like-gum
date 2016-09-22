@@ -1,8 +1,12 @@
+#![feature(plugin, custom_derive)]
+#![plugin(serde_macros)]
+
 extern crate docopt;
 #[macro_use]
 extern crate lazy_static;
 #[macro_use]
 extern crate log as metalog;
+extern crate nanomsg;
 extern crate num;
 extern crate rand;
 

@@ -3,7 +3,7 @@ use transceiver::Transceiver;
 
 
 
-fn init(my_id: ProcessorId, id_to_address: HashMap<ProcessorId, String>)
+pub fn init(my_id: ProcessorId, id_to_address: HashMap<ProcessorId, String>)
     -> Tranceiver {
   Transceiver::new(my_id)
 }
