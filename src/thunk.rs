@@ -1,58 +1,104 @@
+use address::GlobalAddress;
 use object::Object;
 use reference::Ref;
-use weight::Weight;
 
 
 
 pub type Waits = u64;
+
+type BlackHole = Vec<GlobalAddress>;
 
 #[derive(Debug)]
 pub enum Thunk {
   Object(Box<Object>),
   App {
     app: App,
-    black_hole: Vec<GlobalAddress>,
+    black_hole: BlackHole,
     waits: Waits,
   },
 }
 
 impl Thunk {
-  fn from_object(o: Box<Object>) -> (Self, ) {
+  pub fn update(&mut self, v: ThunkValue) -> Vec<GlobalAddress> {
+    assert!(!self.is_object());
 
-  }
-
-  fn update(&mut self, v: ThunkValue) {
     match v {
-      ThunkValue::Object(o) => {
-        self.value = ThunkEnum::Object(o);
-      }
+      ThunkValue::Object(o) => self.update_with_object(o),
       ThunkValue::App(a) => {
-        self.value = ThunkEnum::App {
-          app: a,
-          black_hole: BlackHole::new(),
-          waits: 0,
-        };
+        self.update_with_app(a);
+        Vec::new()
+      }
+    }
+  }
+
+  fn update_with_object(&mut self, o: Box<Object>) -> Vec<GlobalAddress> {
+    let gas = self.take_from_black_hole();
+
+    *self = Thunk::Object(o);
+
+    gas
+  }
+
+  fn update_with_app(&mut self, a: App) {
+    match *self {
+      Thunk::App { ref mut app, waits, .. } => {
+        assert_eq!(waits, 0);
+        *app = a;
       },
+      _ => unreachable!(),
     }
   }
 
-  fn is_object(&self) -> bool {
-    match self.value {
-      ThunkEnum::Object(_) => true,
-      ThunkEnum::App { .. } => false,
+  pub fn is_object(&self) -> bool {
+    match *self {
+      Thunk::Object(_) => true,
+      Thunk::App { .. } => false,
     }
   }
 
-  fn add_weight(&mut self, w: Weight) {
-    self.weight += w;
+  pub fn set_waits(&mut self, w: Waits) {
+    match *self {
+      Thunk::App { ref mut waits, .. } => *waits = w,
+      _ => unreachable!(),
+    }
   }
 
-  fn sub_weight(&mut self, w: Weight) -> bool {
-    self.weight += w;
+  pub fn decre_waits(&mut self) {
+    match *self {
+      Thunk::App { ref mut waits, .. } => *waits -= 1,
+      _ => unreachable!(),
+    }
+  }
+
+  pub fn is_ready(&self) -> bool {
+    match *self {
+      Thunk::App { waits, .. } => waits == 0,
+      _ => unreachable!(),
+    }
+  }
+
+  pub fn put_into_black_hole(&mut self, a: GlobalAddress) {
+    match *self {
+      Thunk::App { ref mut waits, .. } => *waits -= 1,
+      _ => unreachable!(),
+    }
+  }
+
+  fn take_from_black_hole(&mut self) -> Vec<GlobalAddress> {
+    match *self {
+      Thunk::App { ref mut black_hole, .. } => {
+        black_hole.split_off(black_hole.len())
+      }
+      _ => unreachable!(),
+    }
   }
 }
 
-type BlackHole = Vec<GlobalAddress>;
+impl From<Box<Object>> for Thunk {
+  fn from(o: Box<Object>) -> Self {
+    Thunk::Object(o)
+  }
+}
 
 pub struct App {
   func: Ref,

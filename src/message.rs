@@ -12,11 +12,11 @@ pub enum Message {
   Resume { to: LocalAddress, address: GlobalAddress, object: Box<Object> },
 
   Fish { from: ProcessorId },
-  Schedule { task: Thunk, neighbors: Vec<Thunk> },
+  Schedule { task: Thunk, neighbors: Vec<(GlobalAddress, Thunk)> },
 
   AddWeight { address: LocalAddress, delta: Weight },
   SubWeight { address: LocalAddress, delta: Weight },
 
-  Ack { to: LocalAddress },
+  // Ack { to: LocalAddress },
   Finish,
 }

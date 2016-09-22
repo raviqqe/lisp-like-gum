@@ -1,15 +1,16 @@
 use std::collections::VecDeque;
+use std::thread::sleep;
+use std::time::Duration;
 
-use config::PROC_ID;
-use config::ProcessorId;
 use functions::{eval, expand_macros, read};
 use memory::Memory;
 use message::Message::*;
 use network;
-use rand::random;
 use reference::Ref;
 
 
+
+pub type ProcessorId = u64;
 
 pub struct Processor {
   id: ProcessorId,
@@ -20,16 +21,19 @@ pub struct Processor {
 }
 
 impl Processor {
-  pub fn new() -> Processor {
+  pub fn new(id: ProcessorId, ps: Vec<&str>) -> Processor {
     Processor {
+      id: id,
+      memory: Memory::new(id),
       tasks: VecDeque::new(),
-      transceiver: network::init(),
+      transceiver: network::init(id, ps),
       should_stop: false,
     }
   }
 
   pub fn run_as_master(&mut self, source_code: &str) {
-    self.tasks.extend(eval(expand_macros(read(source_code.into()))));
+    let m = self.memory;
+    self.tasks.extend(eval(m, expand_macros(m, read(m, source_code.into()))));
     self.run_loop()
   }
 
@@ -37,18 +41,15 @@ impl Processor {
     self.run_loop()
   }
 
-  fn proc_id(&self) -> ProcessorId {
-    *PROC_ID
-  }
-
   fn run_loop(&mut self) {
     while !self.should_stop {
       self.process_messages();
 
       if self.tasks.is_empty() {
-        self.look_for_tasks()
+        self.look_for_tasks();
+        sleep(Duration::new(0, 1));
       } else {
-        self.run_a_task()
+        self.run_a_task();
       }
     }
   }
@@ -57,12 +58,19 @@ impl Processor {
     while self.transceiver.can_receive() {
       match self.transceiver.receive() {
         Fetch { from, address } => {
-          from.GlobalAddress
+          if let Thunk::Object(ref o) = *address {
+            self.transceiver.send(Resume {
+              to: from.local_address,
+              address: GlobalAddress::new(self.id, local_address),
+              object: o.clone(),
+            });
+          } else {
+            address.put_into_black_hole(from);
+          }
         }
         Resume { to, address, object } => {
+          self.memory.store_global(address, object.into());
           to.decre_waits();
-
-          address;
 
           if to.is_ready() {
             self.tasks.push_back(to.into());
@@ -70,33 +78,45 @@ impl Processor {
         }
 
         Fish { from } => {
+          if self.tasks.is_empty() {
+
+          }
+
+          sleep(Duration::new(0, 1));
         }
         Schedule { task, neighbors } => {
-          self.tasks.push_back(t.into());
+          for (a, t) in neightbors {
+            self.memory.store_global(a, t);
+          }
+
+          self.tasks.push_back(self.memory.store(task));
         }
-        Finish => {
-          self.should_stop = true;
-        }
+
+        AddWeight { address, delta } => address.add_weight(delta),
+        SubWeight { address, delta } => address.sub_weight(delta),
+
+        Finish => self.should_stop = true
       }
     }
   }
 
   fn look_for_tasks(&self) {
-    self.transceiver.send(random() % self.transceiver.num_receivers(),
-                          Fish { from: self.proc_id() });
+    self.transceiver.send_at_random(Fish { from: self.proc_id() });
   }
 
   fn run_a_task(&mut self) {
-    let t = self.tasks.pop_front();
+    let r = self.tasks.pop_front();
     unimplemented!();
   }
 
-  fn delete_ref(&mut self, r: Ref) {
-    assert_eq!(r.global_address.proc_id, self.proc_id);
-    let a = r.local_address();
-    a.weight -= r.weight;
+  pub fn add_weight(&mut self, a: LocalAddress, dw: Weight) {
+    a.add_weight(dw);
+  }
 
-    if a.weight == 0 {
+  pub fn sub_weight(&mut self, a: LocalAddress, dw: Weight) {
+    a.sub_weight(dw);
+
+    if a.is_orphan() {
       let _ = unsafe { Box::from_raw(a) };
     }
   }
