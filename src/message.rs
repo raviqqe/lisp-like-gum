@@ -7,6 +7,7 @@ use weight::Weight;
 
 
 
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Message {
   Fetch { from: GlobalAddress, address: LocalAddress },
   Resume { to: LocalAddress, address: GlobalAddress, object: Box<Object> },
