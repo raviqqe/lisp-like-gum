@@ -2,7 +2,7 @@ use std::ops::{Add, Sub, Div};
 
 
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize)]
 pub struct Weight {
   value: u64,
 }

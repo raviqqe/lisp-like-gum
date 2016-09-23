@@ -28,6 +28,8 @@ impl<T> Weighted<T> {
 }
 
 impl<T> Deref for Weighted<T> {
+  type Target = T;
+
   fn deref(&self) -> &T {
     self.value
   }

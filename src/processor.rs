@@ -83,10 +83,11 @@ impl Processor {
 
         Fish { from } => {
           if self.tasks.is_empty() {
-
+            unimplemented!(); // throw fish to one of others
+            sleep(Duration::new(0, 1));
+          } else {
+            unimplemented!(); // pass thunk to origin
           }
-
-          sleep(Duration::new(0, 1));
         }
         Schedule { task, neighbors } => {
           for (a, t) in neighbors {
