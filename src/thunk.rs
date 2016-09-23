@@ -8,7 +8,7 @@ pub type Waits = u64;
 
 type BlackHole = Vec<GlobalAddress>;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub enum Thunk {
   Object(Box<Object>),
   App {
@@ -100,7 +100,7 @@ impl From<Box<Object>> for Thunk {
   }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct App {
   func: Ref,
   arg: Ref,

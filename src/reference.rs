@@ -6,7 +6,7 @@ use weight::Weight;
 
 
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct Ref {
   global_address: GlobalAddress,
   pub weight: Weight,
