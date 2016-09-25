@@ -66,14 +66,6 @@ Processor = (ProcessorId, GlobalCache)
 GlobalCache = GA -> Object
 ```
 
-### Made of List and Int
-
-#### Function
-
-```
-Function = (Symbol -> Ref, [Symbol], Expr)
-```
-
 
 ## Algorithm
 
@@ -81,3 +73,14 @@ Function = (Symbol -> Ref, [Symbol], Expr)
 2. If #tasks > 0
   - Then run a task
   - Else look for tasks
+
+
+## Language
+
+### Data structures
+
+#### Function
+
+```
+Function = (Symbol -> Ref, [Symbol], Expr)
+```
