@@ -1,5 +1,5 @@
-#![feature(plugin, custom_derive)]
-#![plugin(serde_macros)]
+// #![feature(plugin, custom_derive)]
+// #![plugin(serde_macros)]
 
 extern crate docopt;
 #[macro_use]
@@ -9,7 +9,7 @@ extern crate log as metalog;
 extern crate nanomsg;
 extern crate num;
 extern crate rand;
-extern crate serde;
+// extern crate serde;
 
 mod address;
 mod function;
