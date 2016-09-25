@@ -2,41 +2,82 @@
 
 ## Data structures
 
+### Message
+
 ```
-Packet = Fetch GA GA | Resume GA GA Thunk
-       | Fish ProcessorId | Schedule Graph | Ack GA
-       | DelRef Weight
-       | Finish
+Message =
+  // Distributed memory
 
-Graph = [(GA, Thunk)]
+    Fetch (GA, LA)
+  | Resume (LA, GA, Object)
 
-Thunk = Object | App
-App = (Thunk, Thunk) # The latter must be a list.
+  | AddWeight (LA, Weight)
+  | SubWeight (LA, Weight)
 
-Object = List | Int
+  // Scheduling
 
-Function = (Env, [Symbol], Expr)
-Env = Symbol -> ThunkRef
-Expr = Thunk
+  | Fish ProcessorId
+  | Schedule (Thunk, [(GA, Thunk)])
+  | Renew (LA, GA)
 
-Symbol = String
+  // Others
 
-Processor = (ProcessorId, LID2LATable, GA2LATale, LA2GATale)
-
-LID2LATable = LocalId -> LocalAddress
-GA2LATable = GA -> LA
-LA2GATable = LA -> GA
-GlobalAddress = (ProcessorId, LocalId)
-
-LocalAddress in Pointer
-ProcessorId, LocalId, Weight in NaturalNumber
+  | Ack LA
+  | Finish
 ```
 
+### Object
 
-## Procedure
+```
+Object = /* byte array */
 
-1. GC
-2. Process incoming messages
-3. If #threads > 0
-  - Then run a thread
-  - Else look for sparks
+refs : Object -> [Ref]
+```
+
+### Ref
+
+```
+Ref = (ProcessorId, LA)
+```
+
+### Thunk
+
+```
+Thunk = Object | App (Ref, Ref)
+```
+
+### LocalAddress (LA)
+
+```
+LocalAddress = *Thunk
+```
+
+### GlobalAddress (GA)
+
+```
+GlobalAddress = (ProcessorId, LocalAddress)
+```
+
+### Processor
+
+```
+Processor = (ProcessorId, GlobalCache)
+
+GlobalCache = GA -> Object
+```
+
+### Made of List and Int
+
+#### Function
+
+```
+Function = (Symbol -> Ref, [Symbol], Expr)
+```
+
+
+## Algorithm
+
+1. Process incoming messages
+2. If #tasks > 0
+  - Then run a task
+  - Else look for tasks
