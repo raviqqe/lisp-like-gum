@@ -46,10 +46,10 @@ impl Sub for Weight {
   }
 }
 
-impl Div for Weight {
+impl Div<u64> for Weight {
   type Output = Self;
 
-  fn div<T: Into<u8>>(self, rhs: T) -> Self::Output {
+  fn div(self, rhs: u64) -> Self::Output {
     Weight { value: self.value / rhs }
   }
 }
