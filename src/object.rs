@@ -18,8 +18,8 @@ pub struct SerializedObject {
   data: Vec<u8>,
 }
 
-impl From<&Box<Object>> for SerializedObject {
-  fn from(o: &Box<Object>) -> Self {
+impl<'a> From<&'a Object> for SerializedObject {
+  fn from(o: &'a Object) -> Self {
     let mut h = 0; // dummy value
     o.get_type_id().hash(&mut h);
 

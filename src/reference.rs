@@ -9,12 +9,12 @@ use weight::Weight;
 #[derive(Debug)]
 pub struct Ref {
   global_address: GlobalAddress,
-  pub weight: Weight,
+  weight: Weight,
 }
 
 impl Ref {
-  pub fn new(a: GlobalAddress) -> Ref {
-    Ref { global_address: a, weight: Weight::default() }
+  pub fn new(a: GlobalAddress, w: Weight) -> Ref {
+    Ref { global_address: a, weight: w }
   }
 
   pub fn proc_id(&self) -> ProcessorId {

@@ -27,7 +27,7 @@ impl ThunkMemory for Memory {
   fn store(&self, t: Thunk) -> Ref {
     let p = malloc(size_of::<Weighted<Thunk>>());
     *p = Weighted::new(t);
-    Ref::new(GlobalAddress::new(self.proc_id, p.into()));
+    p.get_ref(self.proc_id)
   }
 
   fn load<'a>(&self, r: Ref) -> Option<&'a Thunk> {
@@ -47,6 +47,10 @@ impl Memory {
       proc_id: id,
       globals: BTreeMap::new(),
     }
+  }
+
+  pub fn get_ref(&self, a: LocalAddress) -> Ref {
+    a.get_ref(self.proc_id)
   }
 
   pub fn store_global(&mut self, a: GlobalAddress, t: Thunk) {

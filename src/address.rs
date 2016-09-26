@@ -22,6 +22,12 @@ impl Into<u64> for LocalAddress {
   }
 }
 
+impl<'a, T> From<&'a Weighted<T>> for LocalAddress {
+  fn from(w: &'a Weighted<T>) -> LocalAddress {
+    LocalAddress(w as *const Weighted<T> as u64)
+  }
+}
+
 impl Deref for LocalAddress {
   type Target = Weighted<Thunk>;
 

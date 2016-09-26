@@ -63,14 +63,13 @@ impl Processor {
     while self.transceiver.can_receive() {
       match self.transceiver.receive() {
         Fetch { from, address } => {
-          if let Thunk::Object(ref o) = *address {
-            self.transceiver.send(Resume {
+          match address.object() {
+            Some(o) => self.transceiver.send(Resume {
               to: from.local_address,
               address: GlobalAddress::new(self.id, address),
               object: o.into(),
-            });
-          } else {
-            address.put_into_black_hole(from);
+            }),
+            None => address.put_into_black_hole(from);
           }
         }
         Resume { to, address, object } => {
@@ -78,7 +77,7 @@ impl Processor {
           to.decre_waits();
 
           if to.is_ready() {
-            self.tasks.push_back(to.into());
+            self.tasks.push_back(self.memory.get_ref(to));
           }
         }
 

@@ -52,7 +52,14 @@ impl Thunk {
   pub fn is_object(&self) -> bool {
     match *self {
       Thunk::Object(_) => true,
-      Thunk::App { .. } => false,
+      _ => false,
+    }
+  }
+
+  pub fn object(&self) -> Opiton<&Object> {
+    match *self {
+      Thunk::Object(o) => Some(o.as_ref()),
+      _ => None,
     }
   }
 

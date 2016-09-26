@@ -1,5 +1,8 @@
-use weight::Weight;
 use std::ops::{Deref, DerefMut};
+
+use weight::Weight;
+use reference::Ref;
+use processor::ProcessorId;
 
 
 
@@ -24,6 +27,12 @@ impl<T> Weighted<T> {
 
   pub fn is_orphan(&self) -> bool {
     self.weight == Weight::new(0)
+  }
+
+  pub fn get_ref(&mut self, id: ProcessorId) -> Ref {
+    let w = Weight::default();
+    self.add_weight(w);
+    Ref::new(GlobalAddress::new(id, self.into()), w)
   }
 }
 
