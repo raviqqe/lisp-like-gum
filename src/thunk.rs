@@ -118,3 +118,16 @@ pub enum ThunkValue {
   Object(Box<Object>),
   App(App),
 }
+
+impl From<ThunkValue> for Thunk {
+  fn from(v: ThunkValue) -> Self {
+    match v {
+      ThunkValue::Object(o) => Thunk::Object(o),
+      ThunkValue::App(a) => Thunk::App {
+        app: a,
+        black_hole: BlackHole::new(),
+        waits: 0,
+      },
+    }
+  }
+}
