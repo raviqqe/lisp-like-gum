@@ -28,6 +28,7 @@ mod weighted;
 
 use std::fs::File;
 use std::str::FromStr;
+use std::io::Read;
 
 use docopt::{ArgvMap, Docopt};
 

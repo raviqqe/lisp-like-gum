@@ -2,23 +2,23 @@ use std::ops::{Add, Sub, Div};
 
 
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
 pub struct Weight {
   value: u64,
 }
 
 impl Weight {
-  fn new(v: u64) {
+  pub fn new(v: u64) -> Weight {
     Weight { value: v }
   }
 
-  fn split(&mut self) -> Option<Self> {
+  pub fn split(&mut self) -> Option<Self> {
     if self.value == 1 {
       return None
     }
 
     let w = self / 2;
-    self -= w;
+    *self -= w;
 
     Some(w)
   }
