@@ -73,7 +73,7 @@ impl Processor {
               address: GlobalAddress::new(self.id, address),
               object: o.into(),
             }),
-            None => address.put_into_black_hole(from);
+            None => address.put_into_black_hole(from),
           }
         }
         Resume { to, address, object } => {

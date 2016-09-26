@@ -28,6 +28,12 @@ impl<'a, T> From<&'a Weighted<T>> for LocalAddress {
   }
 }
 
+impl<'a, T> From<&'a mut Weighted<T>> for LocalAddress {
+  fn from(w: &'a mut Weighted<T>) -> LocalAddress {
+    LocalAddress(w as *const Weighted<T> as u64)
+  }
+}
+
 impl Deref for LocalAddress {
   type Target = Weighted<Thunk>;
 

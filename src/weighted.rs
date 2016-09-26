@@ -3,6 +3,7 @@ use std::ops::{Deref, DerefMut};
 use weight::Weight;
 use reference::Ref;
 use processor::ProcessorId;
+use address::GlobalAddress;
 
 
 

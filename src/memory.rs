@@ -53,8 +53,8 @@ impl Memory {
     a.get_ref(self.proc_id)
   }
 
-  pub fn store_global(&mut self, a: GlobalAddress, t: Thunk) {
-    self.globals.insert(a, t);
+  pub fn store_global(&mut self, a: GlobalAddress, o: Box<Object>) {
+    self.globals.insert(a, o.into());
   }
 
   pub fn load_mut<'a>(&self, r: Ref) -> Option<&'a mut Thunk> {

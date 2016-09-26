@@ -56,7 +56,7 @@ impl Thunk {
     }
   }
 
-  pub fn object(&self) -> Opiton<&Object> {
+  pub fn object(&self) -> Option<&Object> {
     match *self {
       Thunk::Object(o) => Some(o.as_ref()),
       _ => None,

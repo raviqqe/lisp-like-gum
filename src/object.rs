@@ -27,6 +27,12 @@ impl<'a> From<&'a Object> for SerializedObject {
   }
 }
 
+impl From<SerializedObject> for Box<Object> {
+  fn from(s: SerializedObject) -> Self {
+    unimplemented!()
+  }
+}
+
 impl Debug for Box<Object> {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     write!(f, "Object");
