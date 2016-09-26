@@ -31,12 +31,12 @@ impl<T> Deref for Weighted<T> {
   type Target = T;
 
   fn deref(&self) -> &T {
-    self.value
+    &self.value
   }
 }
 
 impl<T> DerefMut for Weighted<T> {
   fn deref_mut(&mut self) -> &mut T {
-    self.value
+    &mut self.value
   }
 }

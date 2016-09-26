@@ -5,6 +5,7 @@ use std::time::Duration;
 use address::{GlobalAddress, LocalAddress};
 use functions::{eval, expand_macros, read};
 use memory::Memory;
+use memory::ThunkMemory;
 use message::Message::*;
 use network;
 use reference::Ref;
@@ -106,7 +107,7 @@ impl Processor {
   }
 
   fn look_for_tasks(&self) {
-    self.transceiver.send_at_random(Fish { from: self.proc_id() });
+    self.transceiver.send_at_random(Fish { from: self.id });
   }
 
   fn run_a_task(&mut self) {

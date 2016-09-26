@@ -9,20 +9,20 @@ pub struct Transceiver {
 }
 
 impl Transceiver {
-  fn new(id: ProcessorId) -> Self {
+  pub fn new(id: ProcessorId) -> Self {
     Transceiver { proc_id: id }
   }
 
-  fn send(&self, m: Message) {
+  pub fn send(&self, m: Message) {
     unimplemented!()
   }
 
-  fn send_at_random(&self, m: Message) {
+  pub fn send_at_random(&self, m: Message) {
     // let i = random() % self.peers.len();
     unimplemented!()
   }
 
-  fn receive(&self) -> Message {
+  pub fn receive(&self) -> Message {
     unimplemented!()
   }
 }

@@ -1,4 +1,4 @@
-use std::ops::{Add, Sub, Div};
+use std::ops::{Add, Sub, Div, AddAssign, SubAssign};
 
 
 
@@ -17,7 +17,7 @@ impl Weight {
       return None
     }
 
-    let w = self / 2;
+    let w = *self / 2;
     *self -= w;
 
     Some(w)
@@ -51,5 +51,17 @@ impl Div<u64> for Weight {
 
   fn div(self, rhs: u64) -> Self::Output {
     Weight { value: self.value / rhs }
+  }
+}
+
+impl AddAssign for Weight {
+  fn add_assign(&mut self, rhs: Self) {
+    *self = *self + rhs;
+  }
+}
+
+impl SubAssign for Weight {
+  fn sub_assign(&mut self, rhs: Self) {
+    *self = *self - rhs;
   }
 }
