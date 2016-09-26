@@ -1,6 +1,6 @@
 use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
-use object::Object;
+use object::SerializedObject;
 use reference::Ref;
 use thunk::Thunk;
 use weight::Weight;
@@ -9,8 +9,15 @@ use weight::Weight;
 
 #[derive(Debug)]
 pub enum Message {
-  Fetch { from: GlobalAddress, address: LocalAddress },
-  Resume { to: LocalAddress, address: GlobalAddress, object: Box<Object> },
+  Fetch {
+    from: GlobalAddress,
+    address: LocalAddress
+  },
+  Resume {
+    to: LocalAddress,
+    address: GlobalAddress,
+    object: SerializedObject
+  },
 
   Fish { from: ProcessorId },
   Schedule { task: Thunk, neighbors: Vec<(GlobalAddress, Thunk)> },

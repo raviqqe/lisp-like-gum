@@ -67,7 +67,7 @@ impl Processor {
             self.transceiver.send(Resume {
               to: from.local_address,
               address: GlobalAddress::new(self.id, address),
-              object: o.clone(),
+              object: o.into(),
             });
           } else {
             address.put_into_black_hole(from);

@@ -1,16 +1,17 @@
 use function::FuncResult;
 use reference::Ref;
+use memory::ThunkMemory;
 
 
 
-pub fn expand_macros(r: Ref) -> FuncResult {
-  r
+pub fn expand_macros(m: &mut ThunkMemory, r: Ref) -> FuncResult {
+  unimplemented!()
 }
 
-pub fn read(r: Ref) -> FuncResult {
-  r
+pub fn read(m: &mut ThunkMemory, r: Ref) -> FuncResult {
+  unimplemented!()
 }
 
-pub fn eval(r: Ref) -> FuncResult {
-  r
+pub fn eval(m: &mut ThunkMemory, r: Ref) -> FuncResult {
+  unimplemented!()
 }

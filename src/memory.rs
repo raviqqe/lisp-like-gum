@@ -27,7 +27,7 @@ impl ThunkMemory for Memory {
   fn store(&self, t: Thunk) -> Ref {
     let p = malloc(size_of::<Weighted<Thunk>>());
     *p = Weighted::new(t);
-    Ref::new(GlobalAddres::new(self.proc_id, p));
+    Ref::new(GlobalAddress::new(self.proc_id, p.into()));
   }
 
   fn load<'a>(&self, r: Ref) -> Option<&'a Thunk> {

@@ -25,4 +25,8 @@ impl Transceiver {
   pub fn receive(&self) -> Message {
     unimplemented!()
   }
+
+  pub fn can_receive(&self) -> bool {
+    unimplemented!()
+  }
 }
