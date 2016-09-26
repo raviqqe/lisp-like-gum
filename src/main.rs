@@ -9,6 +9,7 @@ extern crate log as metalog;
 extern crate nanomsg;
 extern crate num;
 extern crate rand;
+extern crate libc;
 // extern crate serde;
 
 mod address;

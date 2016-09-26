@@ -114,16 +114,4 @@ impl Processor {
     let r = self.tasks.pop_front();
     unimplemented!();
   }
-
-  pub fn add_weight(&mut self, a: LocalAddress, dw: Weight) {
-    a.add_weight(dw);
-  }
-
-  pub fn sub_weight(&mut self, a: LocalAddress, dw: Weight) {
-    a.sub_weight(dw);
-
-    if a.is_orphan() {
-      let _ = unsafe { Box::from_raw(a) };
-    }
-  }
 }

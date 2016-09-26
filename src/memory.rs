@@ -1,4 +1,5 @@
 use std::collections::BTreeMap;
+use std::mem::size_of;
 
 use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
@@ -6,6 +7,7 @@ use reference::Ref;
 use weight::Weight;
 use weighted::Weighted;
 use thunk::{Thunk, Waits};
+use libc::{malloc, free, c_void};
 
 
 
@@ -23,7 +25,9 @@ pub struct Memory {
 
 impl ThunkMemory for Memory {
   fn store(&self, t: Thunk) -> Ref {
-    Ref::new(self.proc_id, Box::into_raw(Box::new(Weighted::new(t))));
+    let p = malloc(size_of::<Weighted<Thunk>>());
+    *p = Weighted::new(t);
+    Ref::new(GlobalAddres::new(self.proc_id, p));
   }
 
   fn load<'a>(&self, r: Ref) -> Option<&'a Thunk> {
@@ -54,6 +58,18 @@ impl Memory {
       Some(&mut *r.local_address())
     } else {
       None
+    }
+  }
+
+  pub fn add_weight(&self, a: LocalAddress, dw: Weight) {
+    a.add_weight(dw);
+  }
+
+  pub fn sub_weight(&self, a: LocalAddress, dw: Weight) {
+    a.sub_weight(dw);
+
+    if a.is_orphan() {
+      free(a as *const c_void);
     }
   }
 }

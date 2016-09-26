@@ -43,7 +43,7 @@ pub struct GlobalAddress {
 }
 
 impl GlobalAddress {
-  fn new(id: ProcessorId, a: LocalAddress) -> Self {
+  pub fn new(id: ProcessorId, a: LocalAddress) -> Self {
     GlobalAddress { proc_id: id, local_address: a }
   }
 }
