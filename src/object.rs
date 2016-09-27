@@ -21,7 +21,8 @@ pub struct SerializedObject {
 impl<'a> From<&'a Object> for SerializedObject {
   fn from(o: &'a Object) -> Self {
     let mut h = 0; // dummy value
-    o.get_type_id().hash(&mut h);
+
+    unimplemented!(); // get_type_id()
 
     SerializedObject { id: h, data: o.serialize() }
   }
