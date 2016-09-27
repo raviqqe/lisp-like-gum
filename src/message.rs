@@ -28,3 +28,15 @@ pub enum Message {
   // Ack { to: LocalAddress },
   Finish,
 }
+
+impl From<Vec<u8>> for Message {
+  fn from(data: Vec<u8>) -> Self {
+    unimplemented!()
+  }
+}
+
+impl From<Message> for Vec<u8> {
+  fn from(m: Message) -> Self {
+    unimplemented!()
+  }
+}

@@ -4,29 +4,38 @@ use rand::random;
 
 
 
-pub struct Transceiver {
-  proc_id: ProcessorId,
+pub struct Transceiver<R: Receiver, S: Sender> {
+  receiver: R,
+  senders: Vec<S>,
 }
 
-impl Transceiver {
-  pub fn new(id: ProcessorId) -> Self {
-    Transceiver { proc_id: id }
+impl<R: Receiver, S: Sender> Transceiver<R, S> {
+  pub fn new(r: R, ss: Vec<S>) -> Self {
+    Transceiver { receiver: r, senders: ss }
   }
 
-  pub fn send(&self, m: Message) {
-    unimplemented!()
+  pub fn send(&self, i: ProcessorId, m: Message) {
+    self.senders[i as usize].send(m.into())
   }
 
   pub fn send_at_random(&self, m: Message) {
-    // let i = random() % self.peers.len();
-    unimplemented!()
+    self.send(random::<ProcessorId>() % self.senders.len() as ProcessorId, m)
   }
 
   pub fn receive(&self) -> Message {
-    unimplemented!()
+    self.receiver.receive().into()
   }
 
   pub fn can_receive(&self) -> bool {
-    unimplemented!()
+    self.receiver.can_receive()
   }
+}
+
+pub trait Sender {
+  fn send(&self, data: Vec<u8>);
+}
+
+pub trait Receiver {
+  fn receive(&self) -> Vec<u8>;
+  fn can_receive(&self) -> bool;
 }

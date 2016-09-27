@@ -8,10 +8,10 @@ use memory::Memory;
 use memory::ThunkMemory;
 use message::Message::*;
 use network;
+use network::Transceiver;
 use reference::Ref;
 use stored::Stored;
 use thunk::Thunk;
-use transceiver::Transceiver;
 use weight::Weight;
 
 
@@ -77,7 +77,7 @@ impl Processor {
       match self.transceiver.receive() {
         Fetch { from, address } => {
           match address.object() {
-            Some(o) => self.transceiver.send(Resume {
+            Some(o) => self.transceiver.send(from.proc_id, Resume {
               to: from.local_address,
               address: GlobalAddress::new(self.id, address),
               object: o.into(),
