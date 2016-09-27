@@ -14,28 +14,24 @@ impl<R: Receiver, S: Sender> Transceiver<R, S> {
     Transceiver { receiver: r, senders: ss }
   }
 
-  pub fn send(&self, i: ProcessorId, m: Message) {
+  pub fn send(&mut self, i: ProcessorId, m: Message) {
     self.senders[i as usize].send(m.into())
   }
 
-  pub fn send_at_random(&self, m: Message) {
-    self.send(random::<ProcessorId>() % self.senders.len() as ProcessorId, m)
+  pub fn send_at_random(&mut self, m: Message) {
+    let l = self.senders.len() as ProcessorId;
+    self.send(random::<ProcessorId>() % l, m)
   }
 
-  pub fn receive(&self) -> Message {
-    self.receiver.receive().into()
-  }
-
-  pub fn can_receive(&self) -> bool {
-    self.receiver.can_receive()
+  pub fn receive(&mut self) -> Option<Message> {
+    self.receiver.receive().map(Message::from)
   }
 }
 
 pub trait Sender {
-  fn send(&self, data: Vec<u8>);
+  fn send(&mut self, data: Vec<u8>);
 }
 
 pub trait Receiver {
-  fn receive(&self) -> Vec<u8>;
-  fn can_receive(&self) -> bool;
+  fn receive(&mut self) -> Option<Vec<u8>>;
 }
