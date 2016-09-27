@@ -108,7 +108,7 @@ impl Processor {
 
       Fish { from } => {
         if self.tasks.is_empty() {
-          unimplemented!(); // throw fish to one of others
+          self.transceiver.send_at_random(m);
           sleep(Duration::new(0, 1));
         } else {
           unimplemented!(); // pass thunk to origin
