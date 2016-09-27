@@ -58,7 +58,7 @@ impl Thunk {
 
   pub fn object(&self) -> Option<&Object> {
     match *self {
-      Thunk::Object(o) => Some(o.as_ref()),
+      Thunk::Object(ref o) => Some(o.as_ref()),
       _ => None,
     }
   }
@@ -94,7 +94,8 @@ impl Thunk {
   fn take_from_black_hole(&mut self) -> Vec<GlobalAddress> {
     match *self {
       Thunk::App { ref mut black_hole, .. } => {
-        black_hole.split_off(black_hole.len())
+        let l = black_hole.len();
+        black_hole.split_off(l)
       }
       _ => unreachable!(),
     }

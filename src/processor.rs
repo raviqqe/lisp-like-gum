@@ -104,8 +104,8 @@ impl Processor {
           self.tasks.push_back(self.memory.store(task));
         }
 
-        AddWeight { address, delta } => address.add_weight(delta),
-        SubWeight { address, delta } => address.sub_weight(delta),
+        AddWeight { mut address, delta } => address.add_weight(delta),
+        SubWeight { mut address, delta } => address.sub_weight(delta),
 
         Finish => self.should_stop = true
       }
