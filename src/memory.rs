@@ -65,11 +65,11 @@ impl Memory {
     }
   }
 
-  pub fn add_weight(&self, a: LocalAddress, dw: Weight) {
+  pub fn add_weight(&self, mut a: LocalAddress, dw: Weight) {
     a.add_weight(dw);
   }
 
-  pub fn sub_weight(&self, a: LocalAddress, dw: Weight) {
+  pub fn sub_weight(&self, mut a: LocalAddress, dw: Weight) {
     a.sub_weight(dw);
 
     if a.is_orphan() {

@@ -38,15 +38,21 @@ impl Processor {
   }
 
   pub fn run_as_master(&mut self, source_code: &str) {
+    let r = self.get_tasks(source_code);
+    self.tasks.push_back(r);
+    self.run_loop()
+  }
+
+  fn get_tasks(&mut self, source_code: &str) -> Ref {
     let m = &mut self.memory;
 
     let r = source_code.stored(m);
-    let r = m.store(read(m, r).unwrap().into());
-    let r = m.store(expand_macros(m, r).unwrap().into());
-    let r = m.store(eval(m, r).unwrap().into());
-
-    self.tasks.push_back(r);
-    self.run_loop()
+    let t = read(m, r).unwrap().into();
+    let r = m.store(t);
+    let t = expand_macros(m, r).unwrap().into();
+    let r = m.store(t);
+    let t = eval(m, r).unwrap().into();
+    m.store(t)
   }
 
   pub fn run_as_slave(&mut self) {
