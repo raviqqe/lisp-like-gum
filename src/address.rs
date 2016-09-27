@@ -42,19 +42,33 @@ impl<'a, T> From<&'a mut Weighted<T>> for LocalAddress {
   }
 }
 
+impl<'a, T> From<LocalAddress> for &'a Weighted<T> {
+  fn from(a: LocalAddress) -> &'a Weighted<T> {
+    let p: u64 = a.into();
+    unsafe { &*(p as *const Weighted<T>) }
+  }
+}
+
+impl<'a, T> From<LocalAddress> for &'a mut Weighted<T> {
+  fn from(a: LocalAddress) -> &'a mut Weighted<T> {
+    let p: u64 = a.into();
+    unsafe { &mut *(p as *mut Weighted<T>) }
+  }
+}
+
 impl Deref for LocalAddress {
   type Target = Weighted<Thunk>;
 
   fn deref(&self) -> &Self::Target {
     let p: u64 = (*self).into();
-    & unsafe { *(p as *const Self::Target) }
+    unsafe { &*(p as *const Self::Target) }
   }
 }
 
 impl DerefMut for LocalAddress {
   fn deref_mut(&mut self) -> &mut Weighted<Thunk> {
     let p: u64 = (*self).into();
-    &mut unsafe { *(p as *mut Weighted<Thunk>) }
+    unsafe { &mut *(p as *mut Weighted<Thunk>) }
   }
 }
 

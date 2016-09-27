@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 use std::mem::size_of;
+use std::ops::{Deref, DerefMut};
 
 use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
@@ -34,7 +35,8 @@ impl ThunkMemory for Memory {
 
   fn load(&self, r: Ref) -> Option<&Thunk> {
     if r.proc_id() == self.proc_id {
-      Some(&**r.local_address())
+      let w: &Weighted<Thunk> = r.local_address().into();
+      Some(w.deref())
     } else {
       self.globals.get(&r.global_address())
     }
@@ -49,7 +51,7 @@ impl Memory {
     }
   }
 
-  pub fn get_ref(&self, a: LocalAddress) -> Ref {
+  pub fn get_ref(&self, mut a: LocalAddress) -> Ref {
     a.get_ref(self.proc_id)
   }
 
@@ -57,9 +59,12 @@ impl Memory {
     self.globals.insert(a, o.into());
   }
 
-  pub fn load_mut<'a>(&self, r: Ref) -> Option<&'a mut Thunk> {
+  pub fn load_mut(&self, r: Ref) -> Option<&mut Thunk> {
+    let a = r.local_address();
+
     if r.proc_id() == self.proc_id {
-      Some(&mut *r.local_address())
+      let w: &mut Weighted<Thunk> = a.into();
+      Some(w.deref_mut())
     } else {
       None
     }
