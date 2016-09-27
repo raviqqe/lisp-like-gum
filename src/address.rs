@@ -46,13 +46,15 @@ impl Deref for LocalAddress {
   type Target = Weighted<Thunk>;
 
   fn deref(&self) -> &Self::Target {
-    &*(self as *const Self::Target)
+    let p: u64 = (*self).into();
+    &*(p as *const Self::Target)
   }
 }
 
 impl DerefMut for LocalAddress {
   fn deref_mut(&mut self) -> &mut Weighted<Thunk> {
-    &mut *(self as *mut Weighted<Thunk>)
+    let p: u64 = (*self).into();
+    &mut *(p as *mut Weighted<Thunk>)
   }
 }
 
