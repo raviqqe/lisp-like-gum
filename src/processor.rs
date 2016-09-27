@@ -119,7 +119,7 @@ impl Processor {
           self.memory.store_global(a, o.into());
         }
 
-        self.tasks.push_back(self.memory.store(task));
+        self.tasks.push_back(self.memory.store(task.into()));
       }
 
       AddWeight { mut address, delta } => address.add_weight(delta),

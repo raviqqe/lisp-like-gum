@@ -2,25 +2,28 @@ use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
 use object::SerializedObject;
 use reference::Ref;
-use thunk::Thunk;
+use thunk::SerializedApp;
 use weight::Weight;
 
 
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub enum Message {
   Fetch {
     from: GlobalAddress,
-    address: LocalAddress
+    address: LocalAddress,
   },
   Resume {
     to: LocalAddress,
     address: GlobalAddress,
-    object: SerializedObject
+    object: SerializedObject,
   },
 
   Fish { from: ProcessorId },
-  Schedule { task: Thunk, neighbors: Vec<(GlobalAddress, SerializedObject)> },
+  Schedule {
+    task: SerializedApp,
+    neighbors: Vec<(GlobalAddress, SerializedObject)>,
+  },
 
   AddWeight { address: LocalAddress, delta: Weight },
   SubWeight { address: LocalAddress, delta: Weight },

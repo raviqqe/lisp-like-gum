@@ -2,11 +2,9 @@ use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
 use weight::Weight;
 
-// Don't implement From<Ref> for &mut Thunk or &Thunk!
 
 
-
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Ref {
   global_address: GlobalAddress,
   weight: Weight,

@@ -108,7 +108,7 @@ impl From<Box<Object>> for Thunk {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct App {
   func: Ref,
   arg: Ref,
@@ -129,6 +129,33 @@ impl From<ThunkValue> for Thunk {
         black_hole: BlackHole::new(),
         waits: 0,
       },
+    }
+  }
+}
+
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SerializedApp {
+  app: App,
+  black_hole: BlackHole,
+  waits: Waits,
+}
+
+impl From<SerializedApp> for Thunk {
+  fn from(SerializedApp { app, black_hole, waits }: SerializedApp) -> Thunk {
+    Thunk::App { app: app, black_hole: black_hole, waits: waits }
+  }
+}
+
+impl From<Thunk> for SerializedApp {
+  fn from(t: Thunk) -> SerializedApp {
+    match t {
+      Thunk::App { app, black_hole, waits } => SerializedApp {
+        app: app,
+        black_hole: black_hole,
+        waits: waits
+      },
+      _ => panic!("The Thunk is not a Thunk::App. (value: {:?})", t),
     }
   }
 }

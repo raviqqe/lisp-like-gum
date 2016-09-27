@@ -12,7 +12,7 @@ pub trait ObjectLike: Object {
   fn deserialize(Vec<u8>) -> Box<Object>;
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SerializedObject {
   id: u64,
   data: Vec<u8>,

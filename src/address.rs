@@ -9,7 +9,8 @@ use weighted::Weighted;
 
 
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd,
+         Serialize, Deserialize)]
 pub struct LocalAddress(u64);
 
 impl From<u64> for LocalAddress {
@@ -72,7 +73,8 @@ impl DerefMut for LocalAddress {
   }
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd,
+         Serialize, Deserialize)]
 pub struct GlobalAddress {
   pub proc_id: ProcessorId,
   pub local_address: LocalAddress,
