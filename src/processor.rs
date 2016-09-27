@@ -76,10 +76,13 @@ impl Processor {
               address: GlobalAddress::new(self.id, address),
               object: o.into(),
             }),
-            None => address.put_into_black_hole(from),
+            None => {
+              let mut a = address;
+              a.put_into_black_hole(from)
+            },
           }
         }
-        Resume { to, address, object } => {
+        Resume { mut to, address, object } => {
           self.memory.store_global(address, object.into());
           to.decre_waits();
 
