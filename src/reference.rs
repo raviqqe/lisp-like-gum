@@ -25,6 +25,10 @@ impl Ref {
     self.global_address.local_address
   }
 
+  pub fn global_address(&self) -> GlobalAddress {
+    self.global_address
+  }
+
   pub fn split(&mut self) -> Option<Self> {
     match self.weight.split() {
       Some(w) => Some(Ref {

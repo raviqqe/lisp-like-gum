@@ -14,7 +14,7 @@ use libc::{malloc, free, c_void};
 
 pub trait ThunkMemory {
   fn store(&self, Thunk) -> Ref;
-  fn load<'a>(&self, Ref) -> Option<&'a Thunk>;
+  fn load(&self, Ref) -> Option<&Thunk>;
 }
 
 
@@ -26,18 +26,16 @@ pub struct Memory {
 
 impl ThunkMemory for Memory {
   fn store(&self, t: Thunk) -> Ref {
-    let p = malloc(size_of::<Weighted<Thunk>>());
-    *p = Weighted::new(t);
-    p.get_ref(self.proc_id)
+    let w: &mut Weighted<Thunk> = malloc(size_of::<Weighted<Thunk>>()).into();
+    *w = Weighted::new(t);
+    w.get_ref(self.proc_id)
   }
 
-  fn load<'a>(&self, r: Ref) -> Option<&'a Thunk> {
+  fn load(&self, r: Ref) -> Option<&Thunk> {
     if r.proc_id() == self.proc_id {
-      Some(&*r.local_address())
-    } else if self.globals.contains_key(r.global_address) {
-      Some(self.globals[r.global_address])
+      Some(&**r.local_address())
     } else {
-      None
+      self.globals.get(&r.global_address())
     }
   }
 }
@@ -74,8 +72,7 @@ impl Memory {
     a.sub_weight(dw);
 
     if a.is_orphan() {
-      let a: u64 = a.into();
-      free(a as *mut c_void);
+      free(a.into());
     }
   }
 }

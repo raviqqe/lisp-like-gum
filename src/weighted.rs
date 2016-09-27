@@ -1,5 +1,7 @@
 use std::ops::{Deref, DerefMut};
 
+use libc::c_void;
+
 use weight::Weight;
 use reference::Ref;
 use processor::ProcessorId;
@@ -48,5 +50,11 @@ impl<T> Deref for Weighted<T> {
 impl<T> DerefMut for Weighted<T> {
   fn deref_mut(&mut self) -> &mut T {
     &mut self.value
+  }
+}
+
+impl<'a, T> From<*mut c_void> for &'a mut Weighted<T> {
+  fn from(p: *mut c_void) -> &'a mut Weighted<T> {
+    &mut *(p as *mut Weighted<T>)
   }
 }

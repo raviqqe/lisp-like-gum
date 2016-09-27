@@ -1,6 +1,8 @@
 use std::ops::{Deref, DerefMut};
 use std::convert::{From, Into};
 
+use libc::c_void;
+
 use processor::ProcessorId;
 use thunk::Thunk;
 use weighted::Weighted;
@@ -19,6 +21,12 @@ impl From<u64> for LocalAddress {
 impl Into<u64> for LocalAddress {
   fn into(self) -> u64 {
     self.0
+  }
+}
+
+impl Into<*mut c_void> for LocalAddress {
+  fn into(self) -> *mut c_void {
+    self.0 as *mut c_void
   }
 }
 
