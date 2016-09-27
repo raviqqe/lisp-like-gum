@@ -74,7 +74,8 @@ impl Memory {
     a.sub_weight(dw);
 
     if a.is_orphan() {
-      free(a as *const c_void);
+      let a: u64 = a.into();
+      free(a as *mut c_void);
     }
   }
 }
