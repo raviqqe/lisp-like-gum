@@ -47,14 +47,14 @@ impl Deref for LocalAddress {
 
   fn deref(&self) -> &Self::Target {
     let p: u64 = (*self).into();
-    &*(p as *const Self::Target)
+    & unsafe { *(p as *const Self::Target) }
   }
 }
 
 impl DerefMut for LocalAddress {
   fn deref_mut(&mut self) -> &mut Weighted<Thunk> {
     let p: u64 = (*self).into();
-    &mut *(p as *mut Weighted<Thunk>)
+    &mut unsafe { *(p as *mut Weighted<Thunk>) }
   }
 }
 

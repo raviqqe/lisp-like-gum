@@ -6,7 +6,7 @@ use reference::Ref;
 
 pub type Waits = u64;
 
-type BlackHole = Vec<GlobalAddress>;
+pub type BlackHole = Vec<GlobalAddress>;
 
 #[derive(Debug)]
 pub enum Thunk {

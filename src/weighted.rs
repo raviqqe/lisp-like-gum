@@ -55,6 +55,6 @@ impl<T> DerefMut for Weighted<T> {
 
 impl<'a, T> From<*mut c_void> for &'a mut Weighted<T> {
   fn from(p: *mut c_void) -> &'a mut Weighted<T> {
-    &mut *(p as *mut Weighted<T>)
+    &mut unsafe { *(p as *mut Weighted<T>) }
   }
 }

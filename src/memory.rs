@@ -26,7 +26,8 @@ pub struct Memory {
 
 impl ThunkMemory for Memory {
   fn store(&self, t: Thunk) -> Ref {
-    let w: &mut Weighted<Thunk> = malloc(size_of::<Weighted<Thunk>>()).into();
+    let w: &mut Weighted<Thunk>
+        = unsafe { malloc(size_of::<Weighted<Thunk>>()) }.into();
     *w = Weighted::new(t);
     w.get_ref(self.proc_id)
   }
@@ -72,7 +73,7 @@ impl Memory {
     a.sub_weight(dw);
 
     if a.is_orphan() {
-      free(a.into());
+      unsafe { free(a.into()) }
     }
   }
 }

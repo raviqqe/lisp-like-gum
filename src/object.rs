@@ -36,6 +36,6 @@ impl From<SerializedObject> for Box<Object> {
 
 impl Debug for Box<Object> {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "Object");
+    write!(f, "Object")
   }
 }

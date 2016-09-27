@@ -36,6 +36,6 @@ impl Ref {
         weight: w,
       }),
       None => None,
-    };
+    }
   }
 }
