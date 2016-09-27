@@ -9,6 +9,7 @@ use memory::ThunkMemory;
 use message::Message::*;
 use network;
 use reference::Ref;
+use stored::Stored;
 use thunk::Thunk;
 use transceiver::Transceiver;
 use weight::Weight;
@@ -38,10 +39,12 @@ impl Processor {
 
   pub fn run_as_master(&mut self, source_code: &str) {
     let m = &mut self.memory;
-    let r = m.store(source_code.into());
+
+    let r = source_code.stored(m);
     let r = m.store(read(m, r).unwrap().into());
     let r = m.store(expand_macros(m, r).unwrap().into());
     let r = m.store(eval(m, r).unwrap().into());
+
     self.tasks.push_back(r);
     self.run_loop()
   }

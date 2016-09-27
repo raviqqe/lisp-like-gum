@@ -22,6 +22,7 @@ mod network;
 mod object;
 mod processor;
 mod reference;
+mod stored;
 mod thunk;
 mod transceiver;
 mod weight;
