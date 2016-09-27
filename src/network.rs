@@ -1,7 +1,8 @@
-use processor::ProcessorId;
-use transceiver;
 use nanomsg;
 use nanomsg::{Socket, Protocol};
+
+use processor::ProcessorId;
+use transceiver;
 
 
 
@@ -60,14 +61,14 @@ impl Sender {
     let mut s = Socket::new(Protocol::Push).unwrap();
     let _ = s.bind(a).unwrap();
 
-    Sender {
-      socket: s,
-    }
+    Sender { socket: s }
   }
 }
 
 impl transceiver::Sender for Sender {
   fn send(&mut self, data: Vec<u8>) {
-    unimplemented!()
+    let l = data.len();
+    let n = self.socket.zc_write(data.as_ref()).unwrap();
+    assert_eq!(n, l);
   }
 }
