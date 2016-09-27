@@ -6,6 +6,7 @@ use processor::ProcessorId;
 use reference::Ref;
 use weight::Weight;
 use weighted::Weighted;
+use object::Object;
 use thunk::{Thunk, Waits};
 use libc::{malloc, free, c_void};
 
