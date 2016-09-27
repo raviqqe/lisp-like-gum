@@ -1,3 +1,6 @@
+use serde_cbor::ser;
+use serde_cbor::de;
+
 use address::{GlobalAddress, LocalAddress};
 use processor::ProcessorId;
 use object::SerializedObject;
@@ -34,12 +37,12 @@ pub enum Message {
 
 impl From<Vec<u8>> for Message {
   fn from(data: Vec<u8>) -> Self {
-    unimplemented!()
+    de::from_slice(data.as_ref()).unwrap()
   }
 }
 
 impl From<Message> for Vec<u8> {
   fn from(m: Message) -> Self {
-    unimplemented!()
+    ser::to_vec(&m).unwrap()
   }
 }

@@ -11,6 +11,7 @@ extern crate num;
 extern crate rand;
 extern crate libc;
 extern crate serde;
+extern crate serde_cbor;
 
 mod address;
 mod function;
