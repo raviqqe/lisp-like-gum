@@ -97,8 +97,8 @@ impl Processor {
           }
         }
         Schedule { task, neighbors } => {
-          for (a, t) in neighbors {
-            self.memory.store_global(a, t);
+          for (a, o) in neighbors {
+            self.memory.store_global(a, o.into());
           }
 
           self.tasks.push_back(self.memory.store(task));

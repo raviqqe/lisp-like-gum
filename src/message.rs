@@ -20,7 +20,7 @@ pub enum Message {
   },
 
   Fish { from: ProcessorId },
-  Schedule { task: Thunk, neighbors: Vec<(GlobalAddress, Thunk)> },
+  Schedule { task: Thunk, neighbors: Vec<(GlobalAddress, SerializedObject)> },
 
   AddWeight { address: LocalAddress, delta: Weight },
   SubWeight { address: LocalAddress, delta: Weight },
