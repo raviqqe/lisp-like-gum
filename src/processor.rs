@@ -41,8 +41,7 @@ impl Processor {
   }
 
   pub fn run_as_master(&mut self, source_code: String) {
-    let r = self.get_tasks(source_code);
-    self.tasks.push_back(r);
+    self.tasks.push_back(self.get_tasks(source_code));
     self.run_loop()
   }
 
