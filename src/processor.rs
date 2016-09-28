@@ -48,13 +48,12 @@ impl Processor {
   fn get_tasks(&mut self, source_code: String) -> Ref {
     let m = &mut self.memory;
 
-    let r = source_code.stored(m);
-    let t = read(m, r).unwrap().into();
-    let r = m.store(t);
-    let t = expand_macros(m, r).unwrap().into();
-    let r = m.store(t);
-    let t = eval(m, r).unwrap().into();
-    m.store(t)
+    let mut r = source_code.stored(m);
+
+    for f in &[read, expand_macros, eval] {
+      let t = f(m, r).unwrap().into();
+      r = m.store(t);
+    }
   }
 
   pub fn run_as_slave(&mut self) {
