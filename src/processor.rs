@@ -9,7 +9,7 @@ use memory::ThunkMemory;
 use message::Message;
 use message::Message::*;
 use network;
-use network::Transceiver;
+use network::{Address, Transceiver};
 use reference::Ref;
 use stored::Stored;
 use thunk::Thunk;
@@ -28,12 +28,12 @@ pub struct Processor {
 }
 
 impl Processor {
-  pub fn new(id: ProcessorId, ps: Vec<&str>) -> Processor {
+  pub fn new(id: ProcessorId, addresses: Vec<Address>) -> Processor {
     Processor {
       id: id,
       memory: Memory::new(id),
       tasks: VecDeque::new(),
-      transceiver: network::init(id, ps),
+      transceiver: network::init(id, addresses),
       should_stop: false,
     }
   }

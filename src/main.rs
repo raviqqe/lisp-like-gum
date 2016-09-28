@@ -32,9 +32,11 @@ mod weighted;
 use std::fs::File;
 use std::str::FromStr;
 use std::io::Read;
+use std::iter::FromIterator;
 
 use docopt::{ArgvMap, Docopt};
 
+use network::Address;
 use processor::Processor;
 
 
@@ -63,10 +65,8 @@ fn main() {
 
   log::init(args.get_str("--log-level"));
 
-  // read_config_file
-
   let mut p = Processor::new(parse_proc_id(args.get_str("--proc-id")),
-                             vec!["tcp://127.0.0.1:1996"]);
+                             read_config_file());
 
   if p.id == 0 {
     p.run_as_master(&read_file(args.get_str("<filename>")));
@@ -89,4 +89,11 @@ fn parse_proc_id(s: &str) -> u64 {
   } else {
     u64::from_str(s).unwrap()
   }
+}
+
+fn read_config_file() -> Vec<Address> {
+  let mut s = String::new();
+  let n = File::open("procs.conf").unwrap().read_to_string(&mut s).unwrap();
+  assert_eq!(n, s.len());
+  Vec::from_iter(s.lines().map(|s| s.trim().into()).filter(|s| s != ""))
 }

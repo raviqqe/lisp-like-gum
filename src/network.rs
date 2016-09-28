@@ -8,11 +8,11 @@ use transceiver;
 
 pub type Transceiver = transceiver::Transceiver<Receiver, Sender>;
 
-pub type Address<'a> = &'a str;
+pub type Address = String;
 
 
 pub fn init(id: ProcessorId, as_: Vec<Address>) -> Transceiver {
-  let r = Receiver::new(as_[id as usize]);
+  let r = Receiver::new(as_[id as usize].clone());
   let mut ss = Vec::new();
 
   for a in as_ {
@@ -30,7 +30,7 @@ pub struct Receiver {
 impl Receiver {
   fn new(a: Address) -> Self {
     let mut s = Socket::new(Protocol::Pull).unwrap();
-    let _ = s.connect(a).unwrap();
+    let _ = s.connect(&a).unwrap();
 
     Receiver { socket: s }
   }
@@ -59,7 +59,7 @@ pub struct Sender {
 impl Sender {
   fn new(a: Address) -> Self {
     let mut s = Socket::new(Protocol::Push).unwrap();
-    let _ = s.bind(a).unwrap();
+    let _ = s.bind(&a).unwrap();
 
     Sender { socket: s }
   }
