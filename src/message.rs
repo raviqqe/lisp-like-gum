@@ -31,7 +31,7 @@ pub enum Message {
   AddWeight { address: LocalAddress, delta: Weight },
   SubWeight { address: LocalAddress, delta: Weight },
 
-  // Ack { to: LocalAddress },
+  DepReady { to: LocalAddress },
   Finish,
 }
 

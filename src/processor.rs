@@ -133,6 +133,8 @@ impl Processor {
       AddWeight { mut address, delta } => address.add_weight(delta),
       SubWeight { mut address, delta } => address.sub_weight(delta),
 
+      DepReady { mut to } => to.decre_waits(),
+
       Finish => self.should_stop = true,
     }
   }
