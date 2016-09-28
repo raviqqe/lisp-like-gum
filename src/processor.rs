@@ -20,7 +20,7 @@ use weight::Weight;
 pub type ProcessorId = u64;
 
 pub struct Processor {
-  pub id: ProcessorId,
+  id: ProcessorId,
   memory: Memory,
   tasks: VecDeque<Ref>,
   transceiver: Transceiver,

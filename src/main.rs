@@ -65,10 +65,10 @@ fn main() {
 
   log::init(args.get_str("--log-level"));
 
-  let mut p = Processor::new(parse_proc_id(args.get_str("--proc-id")),
-                             read_config_file());
+  let i = parse_proc_id(args.get_str("--proc-id"));
+  let mut p = Processor::new(i, read_config_file());
 
-  if p.id == 0 {
+  if i == 0 {
     p.run_as_master(&read_file(args.get_str("<filename>")));
   } else {
     p.run_as_slave();
