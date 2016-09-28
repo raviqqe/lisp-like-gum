@@ -74,6 +74,11 @@ impl Processor {
     }
   }
 
+  fn delete_ref(&mut self, r: Ref) {
+    let (ga, w) = r.delete();
+    unimplemented!();
+  }
+
   fn process_messages(&mut self) {
     loop {
       match self.transceiver.receive() {
