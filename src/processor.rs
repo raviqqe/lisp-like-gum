@@ -77,7 +77,8 @@ impl Processor {
 
   fn delete_ref(&mut self, r: Ref) {
     let (ga, w) = r.delete();
-    unimplemented!();
+    self.transceiver.send(ga.proc_id,
+                          SubWeight { address: ga.local_address, delta: w });
   }
 
   fn process_messages(&mut self) {
