@@ -135,6 +135,6 @@ impl Processor {
 
   fn run_a_task(&mut self) {
     let r = self.tasks.pop_front();
-    unimplemented!();
+    unimplemented!(); // LANGUAGE_SPECIFIC
   }
 }

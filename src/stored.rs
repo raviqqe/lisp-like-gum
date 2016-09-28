@@ -16,9 +16,9 @@ impl Stored for str {
   fn stored(&self, m: &mut ThunkMemory) -> Ref {
     for c in self.chars().rev() {
       // m.store(c)
-      unimplemented!()
+      unimplemented!() // LANGUAGE_SPECIFIC
     }
 
-    unimplemented!()
+    unimplemented!() // LANGUAGE_SPECIFIC
   }
 }

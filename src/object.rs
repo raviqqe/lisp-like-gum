@@ -28,9 +28,9 @@ impl<'a> From<&'a Object> for SerializedObject {
   }
 }
 
-impl From<SerializedObject> for Box<Object> {
-  fn from(s: SerializedObject) -> Self {
-    unimplemented!()
+impl Into<Box<Object>> for SerializedObject {
+  fn into(self) -> Box<Object> {
+    unimplemented!() // TYPES[self.id].deserialize(s.data)
   }
 }
 
