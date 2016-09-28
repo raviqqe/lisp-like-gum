@@ -69,7 +69,7 @@ fn main() {
   let mut p = Processor::new(i, read_config_file());
 
   if i == 0 {
-    p.run_as_master(&read_file(args.get_str("<filename>")));
+    p.run_as_master(read_file(args.get_str("<filename>")));
   } else {
     p.run_as_slave();
   }
@@ -78,7 +78,8 @@ fn main() {
 fn read_file(f: &str) -> String {
   let mut s = String::new();
 
-  File::open(f).unwrap().read_to_string(&mut s).unwrap();
+  let n = File::open(f).unwrap().read_to_string(&mut s).unwrap();
+  assert_eq!(n, s.len());
 
   s
 }
@@ -92,8 +93,6 @@ fn parse_proc_id(s: &str) -> u64 {
 }
 
 fn read_config_file() -> Vec<Address> {
-  let mut s = String::new();
-  let n = File::open("procs.conf").unwrap().read_to_string(&mut s).unwrap();
-  assert_eq!(n, s.len());
-  Vec::from_iter(s.lines().map(|s| s.trim().into()).filter(|s| s != ""))
+  Vec::from_iter(read_file("procs.conf").lines().map(|s| s.trim().into())
+                                                .filter(|s| s != ""))
 }

@@ -38,13 +38,13 @@ impl Processor {
     }
   }
 
-  pub fn run_as_master(&mut self, source_code: &str) {
+  pub fn run_as_master(&mut self, source_code: String) {
     let r = self.get_tasks(source_code);
     self.tasks.push_back(r);
     self.run_loop()
   }
 
-  fn get_tasks(&mut self, source_code: &str) -> Ref {
+  fn get_tasks(&mut self, source_code: String) -> Ref {
     let m = &mut self.memory;
 
     let r = source_code.stored(m);

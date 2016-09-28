@@ -12,7 +12,7 @@ pub trait Stored {
 //   }
 // }
 
-impl Stored for str {
+impl Stored for String {
   fn stored(&self, m: &mut ThunkMemory) -> Ref {
     for c in self.chars().rev() {
       // m.store(c)
