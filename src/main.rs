@@ -37,7 +37,7 @@ use std::iter::FromIterator;
 use docopt::{ArgvMap, Docopt};
 
 use network::Address;
-use processor::Processor;
+use processor::{Processor, ProcessorId, MASTER_ID};
 
 
 
@@ -68,7 +68,7 @@ fn main() {
   let i = parse_proc_id(args.get_str("--proc-id"));
   let mut p = Processor::new(i, read_config_file());
 
-  if i == 0 {
+  if i == MASTER_ID {
     p.run_as_master(read_file(args.get_str("<filename>")));
   } else {
     p.run_as_slave();
@@ -84,11 +84,11 @@ fn read_file(f: &str) -> String {
   s
 }
 
-fn parse_proc_id(s: &str) -> u64 {
+fn parse_proc_id(s: &str) -> ProcessorId {
   if s == "" {
-    0
+    MASTER_ID
   } else {
-    u64::from_str(s).unwrap()
+    ProcessorId::from_str(s).unwrap()
   }
 }
 

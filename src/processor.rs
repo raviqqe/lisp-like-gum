@@ -19,6 +19,8 @@ use weight::Weight;
 
 pub type ProcessorId = u64;
 
+pub const MASTER_ID: ProcessorId = 0;
+
 pub struct Processor {
   id: ProcessorId,
   memory: Memory,
