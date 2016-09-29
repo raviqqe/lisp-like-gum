@@ -70,7 +70,7 @@ impl Processor {
         self.look_for_tasks();
         self.sleep();
       } else {
-        self.run_a_task();
+        self.run_task();
       }
     }
   }
@@ -145,7 +145,7 @@ impl Processor {
     self.transceiver.send_at_random(Fish { from: self.id });
   }
 
-  fn run_a_task(&mut self) {
+  fn run_task(&mut self) {
     let r = self.tasks.pop_front();
     unimplemented!(); // LANGUAGE_SPECIFIC
   }
