@@ -1,17 +1,3 @@
 # todo
 
-- function
-- main
-- memory
-- message
-- network
-- thunk
-- transceiver
-
-# done
-
-- address
-- log
-- reference
-- result
-- weight
+- Add TTL field to Fish message
