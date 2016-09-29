@@ -68,11 +68,15 @@ impl Processor {
 
       if self.tasks.is_empty() {
         self.look_for_tasks();
-        sleep(Duration::new(0, 1));
+        self.sleep();
       } else {
         self.run_a_task();
       }
     }
+  }
+
+  fn sleep(&self) {
+    sleep(Duration::new(0, 1))
   }
 
   fn delete_ref(&mut self, r: Ref) {
@@ -117,7 +121,7 @@ impl Processor {
       Fish { from } => {
         if self.tasks.is_empty() {
           self.transceiver.send_at_random(m);
-          sleep(Duration::new(0, 1));
+          self.sleep();
         } else {
           unimplemented!(); // pass thunk to origin
         }
