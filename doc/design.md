@@ -102,6 +102,12 @@ ByteArray = /* literally low-level byte array */
 ```
 
 
+## Flaws
+
+- When App in a Thunk is moved from a processor to another, how can other Refs
+  track it?
+
+
 ## Notes
 
 - Coroutine is not necessary
@@ -120,6 +126,8 @@ ByteArray = /* literally low-level byte array */
   - The original developer was not sophisticated enough to implement static
     typing and type inference while he bought TAPL.
   - The language will probably gradually-typed hopefully.
+- When an Object is copied, mark it as "copied" with its copy receiver and send
+  CleanCopy later when the corresponding Thunk is deleted.
 
 ### Python
 
