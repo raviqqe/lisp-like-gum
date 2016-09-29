@@ -87,11 +87,8 @@ impl Processor {
   }
 
   fn process_messages(&mut self) {
-    loop {
-      match self.transceiver.receive() {
-        Some(m) => self.process_message(m),
-        None => break,
-      }
+    while let Some(m) = self.transceiver.receive() {
+      self.process_message(m)
     }
   }
 
