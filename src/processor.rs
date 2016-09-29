@@ -79,6 +79,7 @@ impl Processor {
     sleep(Duration::new(0, 1))
   }
 
+  #[allow(dead_code)]
   fn delete_ref(&mut self, r: Ref) {
     let (ga, w) = r.delete();
     self.transceiver.send(ga.proc_id,
