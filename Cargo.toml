@@ -14,3 +14,4 @@ libc = "0.2"
 serde = "0.8"
 serde_macros = "0.8"
 serde_cbor = "0.4"
+mpi = { git = "https://github.com/raviqqe/rsmpi.git", rev = "develop" }
