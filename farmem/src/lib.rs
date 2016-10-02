@@ -15,11 +15,11 @@ extern crate serde_cbor;
 mod global_address;
 mod local_address;
 mod memory;
+mod object;
 mod reference;
 mod weight;
 mod weighted;
 
-// mod object;
 // mod function;
 // mod functions;
 // mod memory;
