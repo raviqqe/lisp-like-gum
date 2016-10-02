@@ -13,8 +13,8 @@ pub struct Weighted<T> {
 }
 
 impl<T> Weighted<T> {
-  pub fn new(o: T, w: Weight) -> Self {
-    Weighted { weight: w, object: o }
+  pub fn new(o: T) -> Self {
+    Weighted { weight: Weight::new(0), object: o }
   }
 
   pub fn is_orphan(&self) -> bool {
