@@ -2,7 +2,6 @@ use global_address::GlobalAddress;
 use local_address::LocalAddress;
 use memory::MemoryId;
 use weight::Weight;
-use split::Split;
 
 
 
@@ -32,15 +31,23 @@ impl Ref {
 
 impl Drop for Ref {
   fn drop(&mut self) {
-    unimplemented!()
+    unimplemented!() // Send SubWeight
   }
 }
 
-impl Split {
-  fn split(&mut self) -> Self {
+impl Clone for Ref {
+  fn clone(&self) -> Self {
+    let r = unsafe { &mut *(self as *const Self as *mut Self) };
+
+    let (w, dw) = r.weight.split();
+
+    if let Some(dw) = dw {
+      unimplemented!(); // Send AddWeight { r.local_address(), dw }
+    }
+
     Ref {
-      global_address: self.global_address,
-      weight: self.weight.split(),
+      global_address: r.global_address,
+      weight: w,
     }
   }
 }

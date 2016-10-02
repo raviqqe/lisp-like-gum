@@ -16,7 +16,6 @@ mod weight;
 mod local_address;
 mod global_address;
 mod memory;
-mod split;
 mod reference;
 
 // mod object;

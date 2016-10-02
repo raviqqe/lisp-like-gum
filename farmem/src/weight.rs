@@ -1,7 +1,5 @@
 use std::ops::{Add, Sub, Div, AddAssign, SubAssign};
 
-use split::Split;
-
 
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -11,18 +9,19 @@ impl Weight {
   pub fn new(n: u64) -> Weight {
     Weight(n)
   }
-}
 
-impl Split() {
-  pub fn split(&mut self) -> Self {
+  pub fn split(&mut self) -> (Self, Option<Self>) {
+    let mut dw = None;
+
     if self.0 == 1 {
-      unimplemented!()
+      dw = Some(Weight::default() - *self);
+      *self += dw.unwrap();
     }
 
-    let w = *self / 2u8;
-    *self -= w;
+    let w = self.0 / 2;
+    self.0 -= w;
 
-    w
+    (Weight(w), dw)
   }
 }
 
@@ -48,22 +47,14 @@ impl Sub for Weight {
   }
 }
 
-impl<T: Into<u64>> Div<T> for Weight {
-  type Output = Self;
-
-  fn div(self, n: T) -> Self::Output {
-    Weight(self.0 / n.into())
-  }
-}
-
 impl AddAssign for Weight {
   fn add_assign(&mut self, w: Self) {
-    *self = *self + w;
+    self.0 += w.0;
   }
 }
 
 impl SubAssign for Weight {
   fn sub_assign(&mut self, w: Self) {
-    *self = *self - w;
+    self.0 -= w.0;
   }
 }
