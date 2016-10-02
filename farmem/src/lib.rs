@@ -20,6 +20,4 @@ mod reference;
 mod weight;
 mod weighted;
 
-// mod memory;
 // mod message;
-// mod transceiver;
