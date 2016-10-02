@@ -1,6 +1,8 @@
-use address::{GlobalAddress, LocalAddress};
-use processor::ProcessorId;
+use global_address::GlobalAddress;
+use local_address::LocalAddress;
+use memory::MemoryId;
 use weight::Weight;
+use split::Split;
 
 
 
@@ -15,29 +17,30 @@ impl Ref {
     Ref { global_address: a, weight: w }
   }
 
-  pub fn proc_id(&self) -> ProcessorId {
-    self.global_address.proc_id
-  }
-
-  pub fn local_address(&self) -> LocalAddress {
-    self.global_address.local_address
-  }
-
   pub fn global_address(&self) -> GlobalAddress {
     self.global_address
   }
 
-  pub fn delete(self) -> (GlobalAddress, Weight) {
-    (self.global_address, self.weight)
+  pub fn memory_id(&self) -> MemoryId {
+    self.global_address.memory_id()
   }
 
-  pub fn split(&mut self) -> Option<Self> {
-    match self.weight.split() {
-      Some(w) => Some(Ref {
-        global_address: self.global_address,
-        weight: w,
-      }),
-      None => None,
+  pub fn local_address(&self) -> LocalAddress {
+    self.global_address.local_address()
+  }
+}
+
+impl Drop for Ref {
+  fn drop(&mut self) {
+    unimplemented!()
+  }
+}
+
+impl Split {
+  fn split(&mut self) -> Self {
+    Ref {
+      global_address: self.global_address,
+      weight: self.weight.split(),
     }
   }
 }

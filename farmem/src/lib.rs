@@ -16,6 +16,8 @@ mod weight;
 mod local_address;
 mod global_address;
 mod memory;
+mod split;
+mod reference;
 
 // mod object;
 // mod function;
@@ -24,7 +26,6 @@ mod memory;
 // mod message;
 // mod network;
 // mod processor;
-// mod reference;
 // mod stored;
 // mod thunk;
 // mod transceiver;

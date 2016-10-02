@@ -1,5 +1,7 @@
 use std::ops::{Add, Sub, Div, AddAssign, SubAssign};
 
+use split::Split;
+
 
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -9,16 +11,18 @@ impl Weight {
   pub fn new(n: u64) -> Weight {
     Weight(n)
   }
+}
 
-  pub fn split(&mut self) -> Option<Self> {
+impl Split() {
+  pub fn split(&mut self) -> Self {
     if self.0 == 1 {
-      return None
+      unimplemented!()
     }
 
     let w = *self / 2u8;
     *self -= w;
 
-    Some(w)
+    w
   }
 }
 
