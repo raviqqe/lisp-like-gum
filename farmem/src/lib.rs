@@ -12,11 +12,12 @@ extern crate libc;
 extern crate serde;
 extern crate serde_cbor;
 
-mod weight;
-mod local_address;
 mod global_address;
+mod local_address;
 mod memory;
 mod reference;
+mod weight;
+mod weighted;
 
 // mod object;
 // mod function;
@@ -28,4 +29,3 @@ mod reference;
 // mod stored;
 // mod thunk;
 // mod transceiver;
-// mod weighted;
