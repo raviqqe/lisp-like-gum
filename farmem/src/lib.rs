@@ -20,12 +20,6 @@ mod reference;
 mod weight;
 mod weighted;
 
-// mod function;
-// mod functions;
 // mod memory;
 // mod message;
-// mod network;
-// mod processor;
-// mod stored;
-// mod thunk;
 // mod transceiver;
