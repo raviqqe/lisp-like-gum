@@ -3,21 +3,19 @@ use std::ops::{Add, Sub, Div, AddAssign, SubAssign};
 
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-pub struct Weight {
-  value: u64,
-}
+pub struct Weight(u64);
 
 impl Weight {
-  pub fn new(v: u64) -> Weight {
-    Weight { value: v }
+  pub fn new(n: u64) -> Weight {
+    Weight(n)
   }
 
   pub fn split(&mut self) -> Option<Self> {
-    if self.value == 1 {
+    if self.0 == 1 {
       return None
     }
 
-    let w = *self / 2;
+    let w = *self / 2u8;
     *self -= w;
 
     Some(w)
@@ -26,42 +24,42 @@ impl Weight {
 
 impl Default for Weight {
   fn default() -> Weight {
-    Weight { value: 2^16 }
+    Weight(2^16)
   }
 }
 
 impl Add for Weight {
   type Output = Self;
 
-  fn add(self, rhs: Self) -> Self::Output {
-    Weight { value: self.value + rhs.value }
+  fn add(self, w: Self) -> Self::Output {
+    Weight(self.0 + w.0)
   }
 }
 
 impl Sub for Weight {
   type Output = Self;
 
-  fn sub(self, rhs: Self) -> Self::Output {
-    Weight { value: self.value - rhs.value }
+  fn sub(self, w: Self) -> Self::Output {
+    Weight(self.0 - w.0)
   }
 }
 
-impl Div<u64> for Weight {
+impl<T: Into<u64>> Div<T> for Weight {
   type Output = Self;
 
-  fn div(self, rhs: u64) -> Self::Output {
-    Weight { value: self.value / rhs }
+  fn div(self, n: T) -> Self::Output {
+    Weight(self.0 / n.into())
   }
 }
 
 impl AddAssign for Weight {
-  fn add_assign(&mut self, rhs: Self) {
-    *self = *self + rhs;
+  fn add_assign(&mut self, w: Self) {
+    *self = *self + w;
   }
 }
 
 impl SubAssign for Weight {
-  fn sub_assign(&mut self, rhs: Self) {
-    *self = *self - rhs;
+  fn sub_assign(&mut self, w: Self) {
+    *self = *self - w;
   }
 }
