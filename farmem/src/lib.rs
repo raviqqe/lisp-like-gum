@@ -13,8 +13,8 @@ extern crate serde;
 extern crate serde_cbor;
 
 mod weight;
+mod local_address;
 
-// mod local_address;
 // mod object;
 // mod function;
 // mod functions;
