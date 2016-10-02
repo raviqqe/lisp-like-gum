@@ -2,7 +2,7 @@ use std::any::Any;
 use std::collections::BTreeMap;
 use std::mem::size_of;
 
-use libc::{malloc, free};
+use libc::malloc;
 
 use global_address::GlobalAddress;
 use object::Object;
