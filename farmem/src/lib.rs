@@ -18,8 +18,11 @@ mod consts;
 mod global_address;
 mod local_address;
 mod memory;
+mod message;
 mod object;
 mod reference;
+mod serialized_object;
+mod type_id;
 mod weight;
 
 // mod message;

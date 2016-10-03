@@ -1,43 +1,27 @@
 use serde_cbor::ser;
 use serde_cbor::de;
 
-use address::{GlobalAddress, LocalAddress};
-use processor::ProcessorId;
-use object::SerializedObject;
-use reference::Ref;
-use thunk::SerializedApp;
+use local_address::LocalAddress;
+use global_address::GlobalAddress;
+use memory::MemoryId;
+use serialized_object::SerializedObject;
 use weight::Weight;
 
 
 
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Message {
-  Fetch {
-    from: GlobalAddress,
-    address: LocalAddress,
-  },
-  Resume {
-    to: LocalAddress,
-    address: GlobalAddress,
-    object: SerializedObject,
-  },
+  Fetch  { from: MemoryId, local_address: LocalAddress },
+  Demand { from: MemoryId },
+  Resume { global_address: GlobalAddress, object: SerializedObject },
 
-  Fish { from: ProcessorId },
-  Schedule {
-    task: SerializedApp,
-    neighbors: Vec<(GlobalAddress, SerializedObject)>,
-  },
-
-  AddWeight { address: LocalAddress, delta: Weight },
-  SubWeight { address: LocalAddress, delta: Weight },
-
-  DepReady { to: LocalAddress },
-  Finish,
+  AddWeight { local_address: LocalAddress, delta: Weight },
+  SubWeight { local_address: LocalAddress, delta: Weight },
 }
 
 impl From<Vec<u8>> for Message {
-  fn from(data: Vec<u8>) -> Self {
-    de::from_slice(data.as_ref()).unwrap()
+  fn from(v: Vec<u8>) -> Self {
+    de::from_slice(v.as_ref()).unwrap()
   }
 }
 
