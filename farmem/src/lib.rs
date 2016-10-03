@@ -3,12 +3,13 @@
 
 #[macro_use]
 extern crate lazy_static;
+extern crate libc;
 #[macro_use]
 extern crate log;
+extern crate mpi;
 extern crate nanomsg;
 extern crate num;
 extern crate rand;
-extern crate libc;
 extern crate serde;
 extern crate serde_cbor;
 

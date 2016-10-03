@@ -3,6 +3,9 @@ use std::collections::BTreeMap;
 use std::mem::size_of;
 
 use libc::malloc;
+use mpi;
+use mpi::environment::Universe;
+use mpi::traits::*;
 
 use cell::Cell;
 use consts::TYPE_ID_SIZE;
@@ -15,17 +18,26 @@ use reference::Ref;
          Serialize, Deserialize)]
 pub struct MemoryId(u64);
 
-#[derive(Debug)]
+impl MemoryId {
+  fn new(i: u64) -> Self {
+    MemoryId(i)
+  }
+}
+
 pub struct Memory {
   id: MemoryId,
   globals: BTreeMap<GlobalAddress, Box<Any>>,
+  universe: Universe,
 }
 
 impl Memory {
-  pub fn new(i: MemoryId) -> Self {
+  pub fn new() -> Self {
+    let u = mpi::initialize().unwrap();
+
     Memory {
-      id: i,
+      id: MemoryId::new(u.world().rank() as u64),
       globals: BTreeMap::new(),
+      universe: u,
     }
   }
 
@@ -70,10 +82,6 @@ impl Memory {
   fn check_id_and_type<T: Any>(&self, r: &Ref) -> bool {
     r.memory_id() == self.id && TypeId::of::<T>() == r.local_address().into()
   }
-
-  // pub fn get_ref(&self, mut a: LocalAddress) -> Ref {
-  //   a.get_ref(self.proc_id)
-  // }
 
   // pub fn store_global(&mut self, a: GlobalAddress, o: Box<Object>) {
   //   self.globals.insert(a, o.into());
