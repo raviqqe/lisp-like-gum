@@ -5,7 +5,6 @@ use std::mem::size_of;
 use libc::malloc;
 
 use global_address::GlobalAddress;
-use object::Object;
 use reference::Ref;
 use cell::Cell;
 
@@ -29,7 +28,7 @@ impl Memory {
     }
   }
 
-  fn store<T: Object>(&self, o: T) -> Ref {
+  fn store<T: Any>(&self, o: T) -> Ref {
     let w = unsafe { &mut *(malloc(size_of::<Cell<T>>())
                             as *mut Cell<T>) };
     *w = Cell::new(o);
