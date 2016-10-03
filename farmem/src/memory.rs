@@ -5,14 +5,11 @@ use std::mem::size_of;
 use libc::malloc;
 
 use cell::Cell;
+use consts::TYPE_ID_SIZE;
 use global_address::GlobalAddress;
 use reference::Ref;
 
 
-
-lazy_static!{
-  static ref TYPE_ID_SIZE: usize = ((size_of::<TypeId>() + 7) % 8) * 8;
-}
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd,
          Serialize, Deserialize)]
@@ -43,26 +40,36 @@ impl Memory {
   }
 
   pub fn load<T: Any>(&self, r: &Ref) -> Option<&T> {
-    let t = unsafe { *((r.local_address().into(): u64 - *TYPE_ID_SIZE as u64)
-                       as *const TypeId) };
-
-    if r.memory_id() == self.id && TypeId::of::<T>() == t {
+    if self.check_id_and_type::<T>(r) {
       Some(unsafe { &&*(r.local_address().into(): u64 as *const Cell<T>) })
     } else {
-      self.globals[&r.global_address()].downcast_ref()
+      match self.globals.get(&r.global_address()) {
+        Some(b) => b.downcast_ref(),
+        None => {
+          unimplemented!() // self.send_fetch()
+        }
+      }
     }
   }
 
-  // pub fn load_mut(&self, r: Ref) -> Option<&mut Thunk> {
-  //   let a = r.local_address();
+  pub fn load_mut<T: Any>(&mut self, r: &Ref) -> Option<&mut T> {
+    if self.check_id_and_type::<T>(r) {
+      let o: &mut T = unsafe { &mut &mut *(r.local_address().into(): u64
+                                           as *mut Cell<T>) };
+      Some(unsafe {&mut *(o as *mut T)})
+    } else {
+      match self.globals.get_mut(&r.global_address()) {
+        Some(b) => b.downcast_mut(),
+        None => {
+          unimplemented!() // self.send_fetch()
+        }
+      }
+    }
+  }
 
-  //   if r.proc_id() == self.proc_id {
-  //     let w: &mut Cell<Thunk> = r.local_address().into();
-  //     Some(w.deref_mut())
-  //   } else {
-  //     self.globals.get_mut(&r.global_address())
-  //   }
-  // }
+  fn check_id_and_type<T: Any>(&self, r: &Ref) -> bool {
+    r.memory_id() == self.id && TypeId::of::<T>() == r.local_address().into()
+  }
 
   // pub fn get_ref(&self, mut a: LocalAddress) -> Ref {
   //   a.get_ref(self.proc_id)

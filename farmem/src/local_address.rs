@@ -1,4 +1,7 @@
+use std::any::TypeId;
 use std::convert::{From, Into};
+
+use consts::TYPE_ID_SIZE;
 
 
 
@@ -15,5 +18,11 @@ impl From<u64> for LocalAddress {
 impl Into<u64> for LocalAddress {
   fn into(self) -> u64 {
     self.0
+  }
+}
+
+impl Into<TypeId> for LocalAddress {
+  fn into(self) -> TypeId {
+    unsafe { *((self.0 - *TYPE_ID_SIZE as u64) as *const TypeId) }
   }
 }

@@ -12,12 +12,13 @@ extern crate libc;
 extern crate serde;
 extern crate serde_cbor;
 
+mod cell;
+mod consts;
 mod global_address;
 mod local_address;
 mod memory;
 mod object;
 mod reference;
 mod weight;
-mod cell;
 
 // mod message;
