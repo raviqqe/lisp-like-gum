@@ -27,7 +27,7 @@ impl MemoryId {
 pub struct Memory {
   id: MemoryId,
   globals: BTreeMap<GlobalAddress, Box<Any>>,
-  universe: Universe,
+  _universe: Universe,
 }
 
 impl Memory {
@@ -37,7 +37,7 @@ impl Memory {
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
       globals: BTreeMap::new(),
-      universe: u,
+      _universe: u,
     }
   }
 
