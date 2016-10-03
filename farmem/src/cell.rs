@@ -1,9 +1,7 @@
-use std::any::{Any, TypeId};
 use std::ops::{Deref, DerefMut, AddAssign, SubAssign};
 
 use global_address::GlobalAddress;
 use reference::Ref;
-use typed::Typed;
 use weight::Weight;
 
 
@@ -11,23 +9,16 @@ use weight::Weight;
 #[derive(Debug)]
 pub struct Cell<T> {
   weight: Weight,
-  type_id: TypeId,
   object: T,
 }
 
-impl<T: Any> Cell<T> {
+impl<T> Cell<T> {
   pub fn new(o: T) -> Self {
-    Cell { weight: Weight::new(0), type_id: TypeId::of::<T>(), object: o }
+    Cell { weight: Weight::new(0), object: o }
   }
 
   pub fn is_orphan(&self) -> bool {
     self.weight == Weight::new(0)
-  }
-}
-
-impl<T> Typed for Cell<T> {
-  fn type_id(&self) -> TypeId {
-    self.type_id
   }
 }
 
