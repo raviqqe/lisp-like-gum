@@ -42,14 +42,16 @@ impl Memory {
     }
   }
 
-  // pub fn load<T>(&self, r: &Ref) -> Option<&T> {
-  //   if r.memory_id() == self.id && TypeId::of::<T>() == ? {
-  //     let w: &Cell<T> = r.local_address().into();
-  //     Some(w.deref())
-  //   } else {
-  //     self.globals.get(&r.global_address())
-  //   }
-  // }
+  pub fn load<T: Any>(&self, r: &Ref) -> Option<&T> {
+    let t = unsafe { *((r.local_address().into(): u64 - *TYPE_ID_SIZE as u64)
+                       as *const TypeId) };
+
+    if r.memory_id() == self.id && TypeId::of::<T>() == t {
+      Some(unsafe { &&*(r.local_address().into(): u64 as *const Cell<T>) })
+    } else {
+      self.globals[&r.global_address()].downcast_ref()
+    }
+  }
 
   // pub fn load_mut(&self, r: Ref) -> Option<&mut Thunk> {
   //   let a = r.local_address();
