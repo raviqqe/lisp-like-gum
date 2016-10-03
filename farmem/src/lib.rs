@@ -18,6 +18,6 @@ mod memory;
 mod object;
 mod reference;
 mod weight;
-mod weighted;
+mod cell;
 
 // mod message;

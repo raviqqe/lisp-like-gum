@@ -24,34 +24,34 @@ impl Into<u64> for LocalAddress {
 //   }
 // }
 
-// impl<'a, T> From<&'a Weighted<T>> for LocalAddress {
-//   fn from(w: &'a Weighted<T>) -> LocalAddress {
-//     LocalAddress(w as *const Weighted<T> as u64)
+// impl<'a, T> From<&'a Cell<T>> for LocalAddress {
+//   fn from(w: &'a Cell<T>) -> LocalAddress {
+//     LocalAddress(w as *const Cell<T> as u64)
 //   }
 // }
 
-// impl<'a, T> From<&'a mut Weighted<T>> for LocalAddress {
-//   fn from(w: &'a mut Weighted<T>) -> LocalAddress {
-//     LocalAddress(w as *const Weighted<T> as u64)
+// impl<'a, T> From<&'a mut Cell<T>> for LocalAddress {
+//   fn from(w: &'a mut Cell<T>) -> LocalAddress {
+//     LocalAddress(w as *const Cell<T> as u64)
 //   }
 // }
 
-// impl<'a, T> From<LocalAddress> for &'a Weighted<T> {
-//   fn from(a: LocalAddress) -> &'a Weighted<T> {
+// impl<'a, T> From<LocalAddress> for &'a Cell<T> {
+//   fn from(a: LocalAddress) -> &'a Cell<T> {
 //     let p: u64 = a.into();
-//     unsafe { &*(p as *const Weighted<T>) }
+//     unsafe { &*(p as *const Cell<T>) }
 //   }
 // }
 
-// impl<'a, T> From<LocalAddress> for &'a mut Weighted<T> {
-//   fn from(a: LocalAddress) -> &'a mut Weighted<T> {
+// impl<'a, T> From<LocalAddress> for &'a mut Cell<T> {
+//   fn from(a: LocalAddress) -> &'a mut Cell<T> {
 //     let p: u64 = a.into();
-//     unsafe { &mut *(p as *mut Weighted<T>) }
+//     unsafe { &mut *(p as *mut Cell<T>) }
 //   }
 // }
 
 // impl<T> Deref for LocalAddress {
-//   type Target = Weighted<T>;
+//   type Target = Cell<T>;
 
 //   fn deref(&self) -> &Self::Target {
 //     let p: u64 = (*self).into();
@@ -60,8 +60,8 @@ impl Into<u64> for LocalAddress {
 // }
 
 // impl<T> DerefMut for LocalAddress {
-//   fn deref_mut(&mut self) -> &mut Weighted<T> {
+//   fn deref_mut(&mut self) -> &mut Cell<T> {
 //     let p: u64 = (*self).into();
-//     unsafe { &mut *(p as *mut Weighted<T>) }
+//     unsafe { &mut *(p as *mut Cell<T>) }
 //   }
 // }

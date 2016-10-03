@@ -7,7 +7,7 @@ use libc::malloc;
 use global_address::GlobalAddress;
 use object::Object;
 use reference::Ref;
-use weighted::Weighted;
+use cell::Cell;
 
 
 
@@ -30,16 +30,16 @@ impl Memory {
   }
 
   fn store<T: Object>(&self, o: T) -> Ref {
-    let w = unsafe { &mut *(malloc(size_of::<Weighted<T>>())
-                            as *mut Weighted<T>) };
-    *w = Weighted::new(o);
+    let w = unsafe { &mut *(malloc(size_of::<Cell<T>>())
+                            as *mut Cell<T>) };
+    *w = Cell::new(o);
 
     w.into()
   }
 
   // fn load(&self, r: Ref) -> Option<&Thunk> {
   //   if r.proc_id() == self.proc_id {
-  //     let w: &Weighted<Thunk> = r.local_address().into();
+  //     let w: &Cell<Thunk> = r.local_address().into();
   //     Some(w.deref())
   //   } else {
   //     self.globals.get(&r.global_address())
@@ -58,7 +58,7 @@ impl Memory {
   //   let a = r.local_address();
 
   //   if r.proc_id() == self.proc_id {
-  //     let w: &mut Weighted<Thunk> = a.into();
+  //     let w: &mut Cell<Thunk> = a.into();
   //     Some(w.deref_mut())
   //   } else {
   //     None
