@@ -43,13 +43,11 @@ impl Memory {
   }
 
   pub fn store<T: Any>(&self, o: T) -> Ref {
-    unsafe {
-      let p = malloc(*TYPE_ID_SIZE + size_of::<Cell<T>>());
-      *(p as *mut TypeId) = TypeId::of::<T>();
-      let c = (p as usize + *TYPE_ID_SIZE) as *mut Cell<T>;
-      *c = Cell::new(o);
-      self.cell_to_ref(&mut *c)
-    }
+    let p = unsafe { malloc(*TYPE_ID_SIZE + size_of::<Cell<T>>()) };
+    unsafe { *(p as *mut TypeId) = TypeId::of::<T>() };
+    let c = unsafe { &mut *((p as usize + *TYPE_ID_SIZE) as *mut Cell<T>) };
+    *c = Cell::new(o);
+    self.cell_to_ref(c)
   }
 
   pub fn load<T: Any>(&self, r: &Ref) -> Option<&T> {
