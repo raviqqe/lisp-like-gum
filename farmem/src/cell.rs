@@ -1,7 +1,5 @@
 use std::ops::{Deref, DerefMut, AddAssign, SubAssign};
 
-use global_address::GlobalAddress;
-use reference::Ref;
 use weight::Weight;
 
 
@@ -45,17 +43,5 @@ impl<T> AddAssign<Weight> for Cell<T> {
 impl<T> SubAssign<Weight> for Cell<T> {
   fn sub_assign(&mut self, w: Weight) {
     self.weight -= w;
-  }
-}
-
-impl<'a, T> Into<Ref> for &'a mut Cell<T> {
-  fn into(self) -> Ref {
-    let w = Weight::default();
-    *self += w;
-
-    let a = GlobalAddress::new(unimplemented!() /* MEMORY.id() */,
-                               (self as *mut Cell<T> as u64).into());
-
-    Ref::new(a, w)
   }
 }

@@ -11,6 +11,7 @@ use cell::Cell;
 use consts::TYPE_ID_SIZE;
 use global_address::GlobalAddress;
 use reference::Ref;
+use weight::Weight;
 
 
 
@@ -47,7 +48,7 @@ impl Memory {
       *(p as *mut TypeId) = TypeId::of::<T>();
       let c = (p as usize + *TYPE_ID_SIZE) as *mut Cell<T>;
       *c = Cell::new(o);
-      (&mut *c).into()
+      self.cell_to_ref(&mut *c)
     }
   }
 
@@ -81,6 +82,13 @@ impl Memory {
 
   fn check_id_and_type<T: Any>(&self, r: &Ref) -> bool {
     r.memory_id() == self.id && TypeId::of::<T>() == r.local_address().into()
+  }
+
+  fn cell_to_ref<T>(&self, c: &mut Cell<T>) -> Ref {
+    let w = Weight::default();
+    *c += w;
+
+    Ref::new(GlobalAddress::new(self.id, (c as *mut Cell<T> as u64).into()), w)
   }
 
   // pub fn store_global(&mut self, a: GlobalAddress, o: Box<Object>) {
