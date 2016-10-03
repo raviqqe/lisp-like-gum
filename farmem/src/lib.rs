@@ -23,3 +23,5 @@ mod reference;
 mod weight;
 
 // mod message;
+
+pub use memory::Memory;
