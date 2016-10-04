@@ -25,26 +25,24 @@ pub struct LocalAddress(u64);
 
 impl LocalAddress {
   pub fn new<T: Any>(o: T) -> LocalAddress {
-    let a = LocalAddress(unsafe { malloc(*TYPE_ID_SIZE + *WEIGHT_SIZE
-                                         + size_of::<T>()) } as u64);
+    let a = LocalAddress(alloc_memory(size_of::<T>()));
 
-    unsafe {
-      *(a.type_id_pointer() as *mut TypeId) = TypeId::of::<T>();
-      *a.weight_mut() = Weight::default();
-      *(a.object_pointer() as *mut T) = o;
-    }
+    *a.type_id_mut() = TypeId::of::<T>();
+    *a.weight_mut() = Weight::default();
+    unsafe { *(a.object_pointer() as *mut T) = o }
 
     a
   }
 
-  pub unsafe fn from_size(s: usize) -> LocalAddress {
-    let a = LocalAddress(malloc(s) as u64);
+  pub fn uninitialized(s: usize, t: TypeId) -> LocalAddress {
+    let a = LocalAddress(alloc_memory(s));
+    *a.type_id_mut() = t;
     *a.weight_mut() = Weight::default();
     a
   }
 
   pub fn type_id(&self) -> TypeId {
-    unsafe { *(self.type_id_pointer() as *const TypeId) }
+    *self.type_id_mut()
   }
 
   pub fn add_weight(&self, w: Weight) {
@@ -57,6 +55,10 @@ impl LocalAddress {
     if *self.weight_mut() == Weight::default() {
       unsafe { free(self.0 as *mut c_void) }
     }
+  }
+
+  fn type_id_mut(&self) -> &mut TypeId {
+    unsafe { &mut *(self.type_id_pointer() as *mut TypeId) }
   }
 
   fn weight_mut(&self) -> &mut Weight {
@@ -86,4 +88,9 @@ impl<'a, T> Into<&'a mut T> for LocalAddress {
   fn into(self) -> &'a mut T {
     unsafe { &mut *(self.object_pointer() as *mut T) }
   }
+}
+
+
+fn alloc_memory(s: usize) -> u64 {
+  unsafe { malloc(*TYPE_ID_SIZE + *WEIGHT_SIZE + s) as u64 }
 }
