@@ -83,6 +83,22 @@ impl Memory {
     self.serder.register::<T>()
   }
 
+  fn clone_ref(&self, r: &mut Ref) -> Ref {
+    // let (w, dw) = r.split_weight();
+
+    // if let Some(dw) = dw {
+    //   r.add_weight();
+    //   unimplemented!(); // Send AddWeight { r.local_address(), dw }
+    // }
+
+    Ref::new(r.global_address(), unimplemented!())
+  }
+
+  fn delete_ref(&self, r: Ref) {
+    // self.transceiver.send(r.memory_id(), SubWeight { local_address: r.local_address(), weight: r.weight() })
+    unimplemented!()
+  }
+
   fn process_messages(&self) {
     while let Some(m) = self.transceiver.receive() {
       match m {

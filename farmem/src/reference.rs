@@ -28,26 +28,3 @@ impl Ref {
     self.global_address.local_address()
   }
 }
-
-impl Drop for Ref {
-  fn drop(&mut self) {
-    unimplemented!() // Send SubWeight
-  }
-}
-
-impl Clone for Ref {
-  fn clone(&self) -> Self {
-    let r = unsafe { &mut *(self as *const Self as *mut Self) };
-
-    let (w, dw) = r.weight.split();
-
-    if let Some(dw) = dw {
-      unimplemented!(); // Send AddWeight { r.local_address(), dw }
-    }
-
-    Ref {
-      global_address: r.global_address,
-      weight: w,
-    }
-  }
-}
