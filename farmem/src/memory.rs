@@ -108,7 +108,7 @@ impl Memory {
         && TypeId::of::<T>() == r.local_address().type_id()
   }
 
-  fn register<T: Object + Any>(&mut self) {
+  pub fn register<T: Object + Any>(&mut self) {
     self.serder.register::<T>()
   }
 
