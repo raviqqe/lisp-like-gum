@@ -21,6 +21,7 @@ mod memory;
 mod message;
 mod object;
 mod reference;
+mod serder;
 mod serialized_object;
 mod type_id;
 mod weight;

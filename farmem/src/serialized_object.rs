@@ -12,18 +12,18 @@ pub struct SerializedObject {
 }
 
 impl SerializedObject {
-  fn new<T: Object>(i: TypeId, o: &T) -> Self {
+  pub fn new<T: Object>(i: TypeId, o: &T) -> Self {
     SerializedObject {
       type_id: i,
       data: ser::to_vec(o).unwrap(),
     }
   }
 
-  fn type_id(&self) -> TypeId {
+  pub fn type_id(&self) -> TypeId {
     self.type_id
   }
 
-  fn data(&self) -> &[u8] {
+  pub fn data(&self) -> &[u8] {
     &self.data[..]
   }
 }
