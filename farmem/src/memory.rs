@@ -7,6 +7,7 @@ use mpi::traits::*;
 
 use global_address::GlobalAddress;
 use local_address::LocalAddress;
+use object::Object;
 use reference::Ref;
 use serder::Serder;
 use weight::Weight;
@@ -78,6 +79,10 @@ impl Memory {
   fn check_id_and_type<T: Any>(&self, r: &Ref) -> bool {
     r.memory_id() == self.id
         && TypeId::of::<T>() == r.local_address().type_id()
+  }
+
+  fn register<T: Object + Any>(&mut self) {
+    self.serder.register::<T>()
   }
 
   // pub fn store_global(&mut self, a: GlobalAddress, o: Box<Object>) {
