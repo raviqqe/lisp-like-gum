@@ -8,8 +8,8 @@ impl TypeId {
   }
 }
 
-impl Into<usize> for TypeId {
-  fn into(self) -> usize {
-    self.0 as usize
+impl From<TypeId> for usize {
+  fn from(t: TypeId) -> Self {
+    t.0 as usize
   }
 }

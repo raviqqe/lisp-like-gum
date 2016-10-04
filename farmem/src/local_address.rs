@@ -1,5 +1,4 @@
 use std::any::{Any, TypeId};
-use std::convert::Into;
 use std::mem::size_of;
 
 use libc::{c_void, malloc, free};
