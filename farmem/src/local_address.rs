@@ -92,5 +92,11 @@ impl<'a, T> Into<&'a mut T> for LocalAddress {
 
 
 fn alloc_memory(s: usize) -> u64 {
-  unsafe { malloc(*TYPE_ID_SIZE + *WEIGHT_SIZE + s) as u64 }
+  let p = unsafe { malloc(*TYPE_ID_SIZE + *WEIGHT_SIZE + s) as u64 };
+
+  if p == 0 {
+    panic!("libc::malloc() failed to allocate memory.")
+  }
+
+  p
 }
