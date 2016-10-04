@@ -26,15 +26,9 @@ impl LocalAddress {
   }
 }
 
-impl From<u64> for LocalAddress {
-  fn from(n: u64) -> LocalAddress {
-    LocalAddress(n)
-  }
-}
-
-impl Into<u64> for LocalAddress {
-  fn into(self) -> u64 {
-    self.0
+impl<'a, T> Into<&'a Cell<T>> for LocalAddress {
+  fn into(self) -> &'a Cell<T> {
+    unsafe { &*((self.0 as usize + *TYPE_ID_SIZE) as *const Cell<T>) }
   }
 }
 
