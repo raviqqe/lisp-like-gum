@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::mem::size_of;
 use std::ops::Deref;
 
-use libc::c_void;
 use serde_cbor::de;
 
 use object::Object;
