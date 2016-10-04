@@ -41,7 +41,7 @@ impl Memory {
 
   pub fn store<T: Any>(&self, o: T) -> Ref {
     let a = LocalAddress::new(o);
-    let w = Weight::default();
+    let w = Weight::new();
     a.add_weight(w);
     Ref::new(GlobalAddress::new(self.id, a), w)
   }

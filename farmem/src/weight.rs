@@ -2,19 +2,19 @@ use std::ops::{Add, Sub, AddAssign, SubAssign};
 
 
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Default, Serialize, Deserialize)]
 pub struct Weight(u64);
 
 impl Weight {
-  pub fn new(n: u64) -> Weight {
-    Weight(n)
+  pub fn new() -> Weight {
+    Weight(2^16)
   }
 
   pub fn split(&mut self) -> (Self, Option<Self>) {
     let mut dw = None;
 
     if self.0 == 1 {
-      dw = Some(Weight::default() - *self);
+      dw = Some(Weight::new() - *self);
       *self += dw.unwrap();
     }
 
@@ -22,12 +22,6 @@ impl Weight {
     self.0 -= w;
 
     (Weight(w), dw)
-  }
-}
-
-impl Default for Weight {
-  fn default() -> Weight {
-    Weight(2^16)
   }
 }
 

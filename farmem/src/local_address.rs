@@ -30,7 +30,7 @@ impl LocalAddress {
 
     unsafe {
       *(a.type_id_pointer() as *mut TypeId) = TypeId::of::<T>();
-      *a.weight_mut() = Weight::new(0);
+      *a.weight_mut() = Weight::default();
       *(a.object_pointer() as *mut T) = o;
     }
 
@@ -39,7 +39,7 @@ impl LocalAddress {
 
   pub unsafe fn from_size(s: usize) -> LocalAddress {
     let a = LocalAddress(malloc(s) as u64);
-    *a.weight_mut() = Weight::new(0);
+    *a.weight_mut() = Weight::default();
     a
   }
 
@@ -54,7 +54,7 @@ impl LocalAddress {
   pub fn sub_weight(&self, w: Weight) {
     *self.weight_mut() -= w;
 
-    if *self.weight_mut() == Weight::new(0) {
+    if *self.weight_mut() == Weight::default() {
       unsafe { free(self.0 as *mut c_void) }
     }
   }
