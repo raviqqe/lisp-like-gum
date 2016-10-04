@@ -1,6 +1,6 @@
 use global_address::GlobalAddress;
 use local_address::LocalAddress;
-use memory::MemoryId;
+use memory_id::MemoryId;
 use weight::Weight;
 
 

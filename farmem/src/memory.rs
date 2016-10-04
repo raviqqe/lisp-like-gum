@@ -3,47 +3,18 @@ use std::collections::BTreeMap;
 
 use mpi;
 use mpi::environment::Universe;
-use mpi::topology::{Rank, SystemCommunicator};
+use mpi::topology::SystemCommunicator;
 use mpi::traits::*;
-use rand::{Rng, Rand};
 
 use global_address::GlobalAddress;
 use local_address::LocalAddress;
+use memory_id::MemoryId;
 use object::Object;
 use reference::Ref;
 use serder::Serder;
 use transceiver::Transceiver;
 use weight::Weight;
 
-
-
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd,
-         Serialize, Deserialize)]
-pub struct MemoryId(u64);
-
-impl MemoryId {
-  fn new(i: u64) -> Self {
-    MemoryId(i)
-  }
-}
-
-impl From<MemoryId> for Rank {
-  fn from(i: MemoryId) -> Self {
-    i.0 as Rank
-  }
-}
-
-impl From<Rank> for MemoryId {
-  fn from(r: Rank) -> Self {
-    MemoryId::new(r as u64)
-  }
-}
-
-impl Rand for MemoryId {
-  fn rand<R: Rng>(r: &mut R) -> Self {
-    MemoryId(r.next_u64())
-  }
-}
 
 
 pub struct Memory {

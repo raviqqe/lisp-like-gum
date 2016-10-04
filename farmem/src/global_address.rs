@@ -1,4 +1,4 @@
-use memory::MemoryId;
+use memory_id::MemoryId;
 use local_address::LocalAddress;
 
 

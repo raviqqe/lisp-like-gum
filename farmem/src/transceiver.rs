@@ -4,7 +4,7 @@ use rand::random;
 use serde_cbor::de;
 use serde_cbor::ser;
 
-use memory::MemoryId;
+use memory_id::MemoryId;
 use message::Message;
 
 

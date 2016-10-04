@@ -1,6 +1,6 @@
 use local_address::LocalAddress;
 use global_address::GlobalAddress;
-use memory::MemoryId;
+use memory_id::MemoryId;
 use serialized_object::SerializedObject;
 use weight::Weight;
 

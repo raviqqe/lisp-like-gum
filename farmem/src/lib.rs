@@ -16,6 +16,7 @@ extern crate serde_cbor;
 mod global_address;
 mod local_address;
 mod memory;
+mod memory_id;
 mod message;
 mod object;
 mod reference;
