@@ -64,7 +64,7 @@ impl Memory {
     if self.check_id_and_type::<T>(r) {
       let o: &mut T = unsafe { &mut &mut *(r.local_address().into()
                                            : &mut Cell<T>) };
-      Some(unsafe {&mut *(o as *mut T)})
+      Some(unsafe { &mut *(o as *mut T) })
     } else {
       match self.globals.get_mut(&r.global_address()) {
         Some(b) => b.downcast_mut(),
