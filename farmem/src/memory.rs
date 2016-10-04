@@ -5,7 +5,6 @@ use mpi;
 use mpi::environment::Universe;
 use mpi::traits::*;
 
-use cell::Cell;
 use global_address::GlobalAddress;
 use local_address::LocalAddress;
 use reference::Ref;
@@ -43,13 +42,13 @@ impl Memory {
   pub fn store<T: Any>(&self, o: T) -> Ref {
     let a = LocalAddress::new(o);
     let w = Weight::default();
-    *(a.into(): &mut Cell<T>) += w;
+    a.add_weight(w);
     Ref::new(GlobalAddress::new(self.id, a), w)
   }
 
   pub fn load<T: Any>(&self, r: &Ref) -> Option<&T> {
     if self.check_id_and_type::<T>(r) {
-      Some(&(r.local_address().into(): &Cell<T>))
+      Some(r.local_address().into())
     } else {
       match self.globals.get(&r.global_address()) {
         Some(b) => b.downcast_ref(),
@@ -62,8 +61,7 @@ impl Memory {
 
   pub fn load_mut<T: Any>(&mut self, r: &Ref) -> Option<&mut T> {
     if self.check_id_and_type::<T>(r) {
-      let o: &mut T = &mut &mut *(r.local_address().into(): &mut Cell<T>);
-      Some(unsafe { &mut *(o as *mut T) })
+      Some(r.local_address().into())
     } else {
       match self.globals.get_mut(&r.global_address()) {
         Some(b) => b.downcast_mut(),
@@ -75,7 +73,8 @@ impl Memory {
   }
 
   fn check_id_and_type<T: Any>(&self, r: &Ref) -> bool {
-    r.memory_id() == self.id && TypeId::of::<T>() == r.local_address().into()
+    r.memory_id() == self.id
+        && TypeId::of::<T>() == r.local_address().type_id()
   }
 
   // pub fn store_global(&mut self, a: GlobalAddress, o: Box<Object>) {

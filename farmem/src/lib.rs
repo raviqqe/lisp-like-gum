@@ -13,7 +13,6 @@ extern crate rand;
 extern crate serde;
 extern crate serde_cbor;
 
-mod cell;
 mod global_address;
 mod local_address;
 mod memory;
