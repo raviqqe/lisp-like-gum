@@ -8,6 +8,7 @@ use mpi::traits::*;
 use global_address::GlobalAddress;
 use local_address::LocalAddress;
 use reference::Ref;
+use serder::Serder;
 use weight::Weight;
 
 
@@ -25,6 +26,7 @@ impl MemoryId {
 pub struct Memory {
   id: MemoryId,
   globals: BTreeMap<GlobalAddress, Box<Any>>,
+  serder: Serder,
   _universe: Universe,
 }
 
@@ -35,6 +37,7 @@ impl Memory {
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
       globals: BTreeMap::new(),
+      serder: Serder::new(),
       _universe: u,
     }
   }
