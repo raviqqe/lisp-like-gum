@@ -3,13 +3,16 @@ use std::collections::BTreeMap;
 
 use mpi;
 use mpi::environment::Universe;
+use mpi::topology::{Rank, SystemCommunicator};
 use mpi::traits::*;
+use rand::{Rng, Rand};
 
 use global_address::GlobalAddress;
 use local_address::LocalAddress;
 use object::Object;
 use reference::Ref;
 use serder::Serder;
+use transceiver::Transceiver;
 use weight::Weight;
 
 
@@ -24,21 +27,45 @@ impl MemoryId {
   }
 }
 
+impl From<MemoryId> for Rank {
+  fn from(i: MemoryId) -> Self {
+    i.0 as Rank
+  }
+}
+
+impl From<Rank> for MemoryId {
+  fn from(r: Rank) -> Self {
+    MemoryId::new(r as u64)
+  }
+}
+
+impl Rand for MemoryId {
+  fn rand<R: Rng>(r: &mut R) -> Self {
+    MemoryId(r.next_u64())
+  }
+}
+
+
 pub struct Memory {
   id: MemoryId,
   globals: BTreeMap<GlobalAddress, Box<Any>>,
   serder: Serder,
+  transceiver: Transceiver,
+  world: SystemCommunicator,
   _universe: Universe,
 }
 
 impl Memory {
   pub fn new() -> Self {
     let u = mpi::initialize().unwrap();
+    let w = u.world();
 
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
       globals: BTreeMap::new(),
       serder: Serder::new(),
+      transceiver: Transceiver::new(w),
+      world: w,
       _universe: u,
     }
   }
@@ -83,6 +110,14 @@ impl Memory {
 
   fn register<T: Object + Any>(&mut self) {
     self.serder.register::<T>()
+  }
+
+  fn process_messages(&self) {
+    while let Some(m) = self.transceiver.receive() {
+      match m {
+        _ => unimplemented!(),
+      }
+    }
   }
 
   // pub fn store_global(&mut self, a: GlobalAddress, o: Box<Object>) {

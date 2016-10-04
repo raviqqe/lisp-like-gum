@@ -21,6 +21,7 @@ mod object;
 mod reference;
 mod serder;
 mod serialized_object;
+mod transceiver;
 mod type_id;
 mod weight;
 
