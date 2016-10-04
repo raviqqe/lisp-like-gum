@@ -7,6 +7,7 @@ use libc::c_void;
 use serde_cbor::de;
 
 use object::Object;
+use local_address::LocalAddress;
 use serialized_object::SerializedObject;
 use type_id::TypeId;
 
@@ -43,8 +44,9 @@ impl Serder {
     SerializedObject::new(self.from_builtin[&any::TypeId::of::<T>()], o)
   }
 
-  pub fn deserialize(&self, s: SerializedObject) -> *mut c_void {
-    // let p = ;
+  pub fn deserialize(&self, s: SerializedObject) -> LocalAddress {
+    // let a = unsafe { LocalAddress::from_size(self.sizes[s.type_id.into()
+    //                                                     : usize]) };
     // self.deserializers[s.type_id().into()](s.data(), p)
     unimplemented!()
   }

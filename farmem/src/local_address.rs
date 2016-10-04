@@ -1,8 +1,8 @@
 use std::any::{Any, TypeId};
-use std::convert::{From, Into};
+use std::convert::Into;
 use std::mem::size_of;
 
-use libc::malloc;
+use libc::{c_void, malloc, free};
 
 use cell::Cell;
 
@@ -24,17 +24,35 @@ impl LocalAddress {
     *c = Cell::new(o);
     LocalAddress(p as u64)
   }
+
+  pub unsafe fn from_size(s: usize) -> LocalAddress {
+    LocalAddress(malloc(s) as u64)
+  }
+
+  pub fn free(&self) {
+    unsafe { free(self.0 as *mut c_void) }
+  }
+
+  fn cell_pointer(&self) -> usize {
+    self.0 as usize + *TYPE_ID_SIZE
+  }
 }
 
 impl<'a, T> Into<&'a Cell<T>> for LocalAddress {
   fn into(self) -> &'a Cell<T> {
-    unsafe { &*((self.0 as usize + *TYPE_ID_SIZE) as *const Cell<T>) }
+    unsafe { &*(self.cell_pointer() as *const Cell<T>) }
   }
 }
 
 impl<'a, T> Into<&'a mut Cell<T>> for LocalAddress {
   fn into(self) -> &'a mut Cell<T> {
-    unsafe { &mut *((self.0 as usize + *TYPE_ID_SIZE) as *mut Cell<T>) }
+    unsafe { &mut *(self.cell_pointer() as *mut Cell<T>) }
+  }
+}
+
+impl Into<usize> for LocalAddress {
+  fn into(self) -> usize {
+    self.cell_pointer()
   }
 }
 

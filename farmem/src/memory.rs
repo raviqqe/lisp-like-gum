@@ -49,7 +49,7 @@ impl Memory {
 
   pub fn load<T: Any>(&self, r: &Ref) -> Option<&T> {
     if self.check_id_and_type::<T>(r) {
-      Some(unsafe { &&*(r.local_address().into(): &Cell<T>) })
+      Some(&(r.local_address().into(): &Cell<T>))
     } else {
       match self.globals.get(&r.global_address()) {
         Some(b) => b.downcast_ref(),
@@ -62,8 +62,7 @@ impl Memory {
 
   pub fn load_mut<T: Any>(&mut self, r: &Ref) -> Option<&mut T> {
     if self.check_id_and_type::<T>(r) {
-      let o: &mut T = unsafe { &mut &mut *(r.local_address().into()
-                                           : &mut Cell<T>) };
+      let o: &mut T = &mut &mut *(r.local_address().into(): &mut Cell<T>);
       Some(unsafe { &mut *(o as *mut T) })
     } else {
       match self.globals.get_mut(&r.global_address()) {
