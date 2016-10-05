@@ -80,6 +80,10 @@ impl Memory {
     self.serder.register::<T>()
   }
 
+  pub fn demand(&self) {
+    self.transceiver.send_at_random(Demand { from: self.id });
+  }
+
   pub fn clone_ref(&self, r: &mut Ref) -> Ref {
     let (w, dw) = r.split_weight();
 
