@@ -27,4 +27,8 @@ impl Ref {
   pub fn local_address(&self) -> LocalAddress {
     self.global_address.local_address()
   }
+
+  pub fn split_weight(&mut self) -> (Weight, Option<Weight>) {
+    self.weight.split()
+  }
 }

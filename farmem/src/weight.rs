@@ -11,6 +11,8 @@ impl Weight {
   }
 
   pub fn split(&mut self) -> (Self, Option<Self>) {
+    assert!(self.0 > 0);
+
     let mut dw = None;
 
     if self.0 == 1 {

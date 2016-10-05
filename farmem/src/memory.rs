@@ -9,6 +9,7 @@ use mpi::traits::*;
 use global_address::GlobalAddress;
 use local_address::LocalAddress;
 use memory_id::MemoryId;
+use message::Message::*;
 use object::Object;
 use reference::Ref;
 use serder::Serder;
@@ -84,14 +85,14 @@ impl Memory {
   }
 
   fn clone_ref(&self, r: &mut Ref) -> Ref {
-    // let (w, dw) = r.split_weight();
+    let (w, dw) = r.split_weight();
 
-    // if let Some(dw) = dw {
-    //   r.add_weight();
-    //   unimplemented!(); // Send AddWeight { r.local_address(), dw }
-    // }
+    if let Some(dw) = dw {
+      let m = AddWeight { local_address: r.local_address(), delta: dw };
+      self.transceiver.send(r.memory_id(), m);
+    }
 
-    Ref::new(r.global_address(), unimplemented!())
+    Ref::new(r.global_address(), w)
   }
 
   fn delete_ref(&self, r: Ref) {
