@@ -43,7 +43,7 @@ impl TypeManager {
 
     self.ref_extracters[i] = Box::new(move |p: usize| {
       unsafe { ptr::read(p as *const T).into_refs() }
-    };
+    });
 
     self.serializers[i] = Box::new(move |p: usize| {
       unsafe { ser::to_vec(&mut *(p as *mut T)).unwrap() }
