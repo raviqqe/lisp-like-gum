@@ -95,7 +95,7 @@ impl Memory {
     Ref::new(r.global_address(), w)
   }
 
-  fn delete_ref(&self, r: Ref) {
+  pub fn delete_ref(&self, r: Ref) {
     let (a, w) = r.delete();
     self.transceiver.send(
         a.memory_id(),
