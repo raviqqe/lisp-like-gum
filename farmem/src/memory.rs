@@ -84,7 +84,7 @@ impl Memory {
     self.serder.register::<T>()
   }
 
-  fn clone_ref(&self, r: &mut Ref) -> Ref {
+  pub fn clone_ref(&self, r: &mut Ref) -> Ref {
     let (w, dw) = r.split_weight();
 
     if let Some(dw) = dw {
