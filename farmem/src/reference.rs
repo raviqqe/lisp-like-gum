@@ -12,7 +12,7 @@ pub struct Ref {
 }
 
 pub trait FriendlyRef {
-  fn new(a: GlobalAddress, w: Weight) -> Self;
+  fn new(GlobalAddress, Weight) -> Self;
   fn global_address(&self) -> GlobalAddress;
   fn local_address(&self) -> LocalAddress;
   fn memory_id(&self) -> MemoryId;
