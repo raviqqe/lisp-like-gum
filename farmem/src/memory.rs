@@ -115,7 +115,7 @@ impl Memory {
 
           self.transceiver.send(from, m);
         }
-        Demand { from } => unimplemented!(),
+        Demand { from } => unimplemented!(), // send Notice
         Resume { global_address, object } => {
           self.globals.insert(global_address, self.serder.deserialize(object));
         }
