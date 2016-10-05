@@ -8,4 +8,5 @@ use reference::Ref;
 pub trait Object: Serialize + Deserialize {
   fn refs(&self) -> Vec<&Ref>;
   fn nearby_refs(&self) -> Vec<&Ref>;
+  fn into_refs(self) -> Vec<Ref>;
 }

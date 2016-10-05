@@ -13,7 +13,7 @@ use memory_id::MemoryId;
 use message::Message::*;
 use object::Object;
 use reference::Ref;
-use serder::Serder;
+use type_manager::TypeManager;
 use transceiver::Transceiver;
 use weight::Weight;
 
@@ -22,7 +22,7 @@ use weight::Weight;
 pub struct Memory {
   id: MemoryId,
   globals: BTreeMap<GlobalAddress, LocalAddress>,
-  serder: Serder,
+  type_manager: TypeManager,
   transceiver: Transceiver,
   _universe: Universe,
 }
@@ -34,7 +34,7 @@ impl Memory {
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
       globals: BTreeMap::new(),
-      serder: Serder::new(),
+      type_manager: TypeManager::new(),
       transceiver: Transceiver::new(u.world()),
       _universe: u,
     }
@@ -78,7 +78,7 @@ impl Memory {
   }
 
   pub fn register<T: Object + Any>(&mut self) {
-    self.serder.register::<T>()
+    self.type_manager.register::<T>()
   }
 
   pub fn demand(&self) {
@@ -107,7 +107,7 @@ impl Memory {
     while let Some(m) = self.transceiver.receive() {
       match m {
         Fetch { from, local_address } => {
-          let o = self.serder.serialize(local_address.type_id(),
+          let o = self.type_manager.serialize(local_address.type_id(),
                                         local_address.unknown_object_ptr());
           let m = Resume {
             global_address: GlobalAddress::new(self.id, local_address),
@@ -118,7 +118,7 @@ impl Memory {
         }
         Demand { from } => unimplemented!(), // send Notice
         Resume { global_address, object } => {
-          self.globals.insert(global_address, self.serder.deserialize(object));
+          self.globals.insert(global_address, self.type_manager.deserialize(object));
         }
 
         AddWeight { local_address, delta } => local_address.add_weight(delta),

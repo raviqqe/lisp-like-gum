@@ -22,7 +22,7 @@ mod memory_id;
 mod message;
 mod object;
 mod reference;
-mod serder;
+mod type_manager;
 mod serialized_object;
 mod transceiver;
 mod type_id;
