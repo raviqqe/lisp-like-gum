@@ -28,7 +28,7 @@ impl LocalAddress {
 
     *a.type_id_mut() = TypeId::of::<T>();
     *a.weight_mut() = Weight::default();
-    unsafe { *(a.object_pointer() as *mut T) = o }
+    unsafe { *a.object_mut::<T>().unwrap() = o }
 
     a
   }
@@ -57,35 +57,39 @@ impl LocalAddress {
   }
 
   fn type_id_mut(&self) -> &mut TypeId {
-    unsafe { &mut *(self.type_id_pointer() as *mut TypeId) }
+    unsafe { &mut *(self.type_id_ptr() as *mut TypeId) }
   }
 
   fn weight_mut(&self) -> &mut Weight {
-    unsafe { &mut *(self.weight_pointer() as *mut Weight) }
+    unsafe { &mut *(self.weight_ptr() as *mut Weight) }
   }
 
-  fn type_id_pointer(&self) -> usize {
+  fn type_id_ptr(&self) -> usize {
     self.0 as usize
   }
 
-  fn weight_pointer(&self) -> usize {
-    self.type_id_pointer() + *TYPE_ID_SIZE
+  fn weight_ptr(&self) -> usize {
+    self.type_id_ptr() + *TYPE_ID_SIZE
   }
 
-  pub fn object_pointer(&self) -> usize {
-    self.weight_pointer() + *WEIGHT_SIZE
+  pub fn unknown_object_ptr(&self) -> usize {
+    self.weight_ptr() + *WEIGHT_SIZE
   }
-}
 
-impl<'a, T> Into<&'a T> for LocalAddress {
-  fn into(self) -> &'a T {
-    unsafe { &*(self.object_pointer() as *const T) }
+  pub fn object<T: Any>(&self) -> Option<*const T> {
+    self.object_ptr(TypeId::of::<T>()).map(|p| p as *const T)
   }
-}
 
-impl<'a, T> Into<&'a mut T> for LocalAddress {
-  fn into(self) -> &'a mut T {
-    unsafe { &mut *(self.object_pointer() as *mut T) }
+  pub fn object_mut<T: Any>(&self) -> Option<*mut T> {
+    self.object_ptr(TypeId::of::<T>()).map(|p| p as *mut T)
+  }
+
+  fn object_ptr(&self, t: TypeId) -> Option<usize> {
+    if self.type_id() == t {
+      Some(self.unknown_object_ptr())
+    } else {
+      None
+    }
   }
 }
 

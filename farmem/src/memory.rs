@@ -1,4 +1,4 @@
-use std::any::{Any, TypeId};
+use std::any::Any;
 use std::collections::BTreeMap;
 
 use mpi;
@@ -6,6 +6,8 @@ use mpi::environment::Universe;
 use mpi::traits::*;
 
 use global_address::GlobalAddress;
+use load_error::LoadError::*;
+use load_result::LoadResult;
 use local_address::LocalAddress;
 use memory_id::MemoryId;
 use message::Message::*;
@@ -45,35 +47,25 @@ impl Memory {
     Ref::new(GlobalAddress::new(self.id, a), w)
   }
 
-  pub fn load<T: Any>(&self, r: &Ref) -> Option<&T> {
-    if self.check_id_and_type::<T>(r) {
-      Some(r.local_address().into())
+  pub fn load<T: Any>(&self, r: &Ref) -> LoadResult<&T> {
+    if self.is_cached(r) {
+      (if self.id == r.memory_id() { r.local_address() }
+       else { self.globals[&r.global_address()] })
+      .object::<T>().map(|p| unsafe { &*p }).ok_or(TypeMismatch)
     } else {
-      match self.globals.get(&r.global_address()) {
-        Some(a) => Some((*a).into()),
-        None => {
-          unimplemented!() // self.send_fetch()
-        }
-      }
+      self.transceiver.send(
+          r.memory_id(),
+          Fetch { from: self.id, local_address: r.local_address() });
+      Err(NotCached)
     }
   }
 
-  pub fn load_mut<T: Any>(&mut self, r: &Ref) -> Option<&mut T> {
-    if self.check_id_and_type::<T>(r) {
-      Some(r.local_address().into())
-    } else {
-      match self.globals.get_mut(&r.global_address()) {
-        Some(a) => Some((*a).into()),
-        None => {
-          unimplemented!() // self.send_fetch()
-        }
-      }
-    }
+  pub fn load_mut<T: Any>(&mut self, r: &Ref) -> LoadResult<&mut T> {
+    unimplemented!()
   }
 
-  fn check_id_and_type<T: Any>(&self, r: &Ref) -> bool {
-    r.memory_id() == self.id
-        && TypeId::of::<T>() == r.local_address().type_id()
+  pub fn is_cached(&self, r: &Ref) -> bool {
+    r.memory_id() == self.id || self.globals.contains_key(&r.global_address())
   }
 
   pub fn register<T: Object + Any>(&mut self) {
@@ -107,7 +99,7 @@ impl Memory {
       match m {
         Fetch { from, local_address } => {
           let o = self.serder.serialize(local_address.type_id(),
-                                        local_address.object_pointer());
+                                        local_address.unknown_object_ptr());
           let m = Resume {
             global_address: GlobalAddress::new(self.id, local_address),
             object: o,

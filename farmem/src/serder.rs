@@ -56,7 +56,7 @@ impl Serder {
     let i: usize = s.type_id().into();
 
     let a = LocalAddress::uninitialized(self.sizes[i], self.to_builtin[i]);
-    self.deserializers[i].deref()(s.data(), a.object_pointer());
+    self.deserializers[i].deref()(s.data(), a.unknown_object_ptr());
     a
   }
 }
