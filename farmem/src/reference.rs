@@ -11,28 +11,37 @@ pub struct Ref {
   weight: Weight,
 }
 
-impl Ref {
-  pub fn new(a: GlobalAddress, w: Weight) -> Ref {
+pub trait FriendlyRef {
+  fn new(a: GlobalAddress, w: Weight) -> Self;
+  fn global_address(&self) -> GlobalAddress;
+  fn local_address(&self) -> LocalAddress;
+  fn memory_id(&self) -> MemoryId;
+  fn split_weight(&mut self) -> (Weight, Option<Weight>);
+  fn delete(self) -> (GlobalAddress, Weight);
+}
+
+impl FriendlyRef for Ref {
+  fn new(a: GlobalAddress, w: Weight) -> Self {
     Ref { global_address: a, weight: w }
   }
 
-  pub fn global_address(&self) -> GlobalAddress {
+  fn global_address(&self) -> GlobalAddress {
     self.global_address
   }
 
-  pub fn memory_id(&self) -> MemoryId {
-    self.global_address.memory_id()
-  }
-
-  pub fn local_address(&self) -> LocalAddress {
+  fn local_address(&self) -> LocalAddress {
     self.global_address.local_address()
   }
 
-  pub fn split_weight(&mut self) -> (Weight, Option<Weight>) {
+  fn memory_id(&self) -> MemoryId {
+    self.global_address.memory_id()
+  }
+
+  fn split_weight(&mut self) -> (Weight, Option<Weight>) {
     self.weight.split()
   }
 
-  pub fn delete(self) -> (GlobalAddress, Weight) {
+  fn delete(self) -> (GlobalAddress, Weight) {
     (self.global_address, self.weight)
   }
 }

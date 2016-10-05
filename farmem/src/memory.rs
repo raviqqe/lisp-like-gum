@@ -12,7 +12,7 @@ use local_address::LocalAddress;
 use memory_id::MemoryId;
 use message::Message::*;
 use object::Object;
-use reference::Ref;
+use reference::{Ref, FriendlyRef};
 use type_manager::TypeManager;
 use transceiver::Transceiver;
 use weight::Weight;
