@@ -61,7 +61,16 @@ impl Memory {
   }
 
   pub fn load_mut<T: Any>(&mut self, r: &Ref) -> LoadResult<&mut T> {
-    unimplemented!()
+    if self.is_cached(r) {
+      (if self.id == r.memory_id() { r.local_address() }
+       else { self.globals[&r.global_address()] })
+      .object_mut::<T>().map(|p| unsafe { &mut *p}).ok_or(TypeMismatch)
+    } else {
+      self.transceiver.send(
+          r.memory_id(),
+          Fetch { from: self.id, local_address: r.local_address() });
+      Err(NotCached)
+    }
   }
 
   pub fn is_cached(&self, r: &Ref) -> bool {
