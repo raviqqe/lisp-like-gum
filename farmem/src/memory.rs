@@ -47,7 +47,7 @@ impl Memory {
     Ref::new(GlobalAddress::new(self.id, a), w)
   }
 
-  pub fn load<T: Any>(&self, r: &Ref) -> LoadResult<&T> {
+  pub fn load<T: Any>(&mut self, r: &Ref) -> LoadResult<&T> {
     if self.is_cached(r) {
       (if self.id == r.memory_id() { r.local_address() }
        else { self.globals[&r.global_address()] })
@@ -73,8 +73,14 @@ impl Memory {
     }
   }
 
-  pub fn is_cached(&self, r: &Ref) -> bool {
-    r.memory_id() == self.id || self.globals.contains_key(&r.global_address())
+  pub fn is_cached(&mut self, r: &Ref) -> bool {
+    if r.memory_id() == self.id
+        || self.globals.contains_key(&r.global_address()) {
+      true
+    } else {
+      self.process_messages();
+      false
+    }
   }
 
   pub fn register<T: Object + Any>(&mut self) {
