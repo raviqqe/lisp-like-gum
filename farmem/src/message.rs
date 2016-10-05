@@ -9,8 +9,10 @@ use weight::Weight;
 #[derive(Debug, Serialize, Deserialize)]
 pub enum Message {
   Fetch  { from: MemoryId, local_address: LocalAddress },
-  Demand { from: MemoryId },
   Resume { global_address: GlobalAddress, object: SerializedObject },
+
+  Demand { from: MemoryId },
+  Feed { global_address: GlobalAddress, object: SerializedObject },
 
   AddWeight { local_address: LocalAddress, delta: Weight },
   SubWeight { local_address: LocalAddress, delta: Weight },

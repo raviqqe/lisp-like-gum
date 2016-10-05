@@ -13,6 +13,7 @@ extern crate rand;
 extern crate serde;
 extern crate serde_cbor;
 
+mod demand;
 mod global_address;
 mod load_error;
 mod load_result;
@@ -20,6 +21,7 @@ mod local_address;
 mod memory;
 mod memory_id;
 mod message;
+mod notice;
 mod object;
 mod reference;
 mod type_manager;

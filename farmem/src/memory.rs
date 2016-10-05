@@ -5,6 +5,8 @@ use mpi;
 use mpi::environment::Universe;
 use mpi::traits::*;
 
+use demand;
+use demand::FriendlyDemand;
 use global_address::GlobalAddress;
 use load_error::LoadError::*;
 use load_result::LoadResult;
@@ -91,6 +93,15 @@ impl Memory {
     self.transceiver.send_at_random(Demand { from: self.id });
   }
 
+  pub fn feed(&self, d: demand::Demand, r: Ref) {
+    let m = Feed {
+      global_address: r.global_address(),
+      object: self.type_manager.serialize(r.local_address()),
+    };
+
+    self.transceiver.send(d.memory_id(), m);
+  }
+
   pub fn clone_ref(&self, r: &mut Ref) -> Ref {
     let (w, dw) = r.split_weight();
 
@@ -121,11 +132,13 @@ impl Memory {
 
           self.transceiver.send(from, m);
         }
-        Demand { from } => unimplemented!(), // send Notice
         Resume { global_address, object } => {
           self.globals.insert(global_address,
                               self.type_manager.deserialize(object));
         }
+
+        Demand { from } => unimplemented!(), // send Notice
+        Feed { global_address, object } => unimplemented!(), // feed
 
         AddWeight { local_address, delta } => local_address.add_weight(delta),
         SubWeight { local_address, delta } => {
