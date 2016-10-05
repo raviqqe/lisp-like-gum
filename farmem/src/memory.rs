@@ -125,16 +125,4 @@ impl Memory {
       }
     }
   }
-
-  // pub fn add_weight(&self, mut a: LocalAddress, dw: Weight) {
-  //   a.add_weight(dw);
-  // }
-
-  // pub fn sub_weight(&self, mut a: LocalAddress, dw: Weight) {
-  //   a.sub_weight(dw);
-
-  //   if a.is_orphan() {
-  //     unsafe { free(a.into()) }
-  //   }
-  // }
 }
