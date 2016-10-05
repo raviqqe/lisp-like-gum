@@ -113,8 +113,7 @@ impl Memory {
     while let Some(m) = self.transceiver.receive() {
       match m {
         Fetch { from, local_address } => {
-          let o = self.type_manager.serialize(local_address.type_id(),
-                                        local_address.unknown_object_ptr());
+          let o = self.type_manager.serialize(local_address);
           let m = Resume {
             global_address: GlobalAddress::new(self.id, local_address),
             object: o,
@@ -133,9 +132,7 @@ impl Memory {
           local_address.sub_weight(delta);
 
           if local_address.is_orphan() {
-            for r in self.type_manager.extract_refs(
-                local_address.type_id(),
-                local_address.unknown_object_ptr()) {
+            for r in self.type_manager.extract_refs(local_address) {
               self.delete_ref(r);
             }
 

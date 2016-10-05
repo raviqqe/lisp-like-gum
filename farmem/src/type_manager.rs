@@ -54,13 +54,17 @@ impl TypeManager {
     });
   }
 
-  pub fn extract_refs(&self, builtin: any::TypeId, o: usize) -> Vec<Ref> {
-    self.ref_extracters[self.from_builtin[&builtin].into(): usize].deref()(o)
+  pub fn extract_refs(&self, a: LocalAddress) -> Vec<Ref> {
+    self.ref_extracters[self.from_builtin[&a.type_id()].into(): usize]
+        .deref()(a.unknown_object_ptr())
   }
 
-  pub fn serialize(&self, builtin: any::TypeId, o: usize) -> SerializedObject {
-    let t = self.from_builtin[&builtin];
-    SerializedObject::new(t, self.serializers[t.into(): usize].deref()(o))
+  pub fn serialize(&self, a: LocalAddress) -> SerializedObject {
+    let t = self.from_builtin[&a.type_id()];
+
+    SerializedObject::new(
+        t,
+        self.serializers[t.into(): usize].deref()(a.unknown_object_ptr()))
   }
 
   pub fn deserialize(&self, s: SerializedObject) -> LocalAddress {
