@@ -1,4 +1,4 @@
-#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd,
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash,
          Serialize, Deserialize)]
 pub struct TypeId(u64);
 

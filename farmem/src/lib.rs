@@ -25,6 +25,7 @@ mod reference;
 mod type_manager;
 mod serialized_object;
 mod transceiver;
+mod type_;
 mod type_id;
 mod weight;
 
