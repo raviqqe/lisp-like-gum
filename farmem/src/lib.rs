@@ -14,6 +14,8 @@ extern crate serde;
 extern crate serde_cbor;
 
 mod global_address;
+mod load_error;
+mod load_result;
 mod local_address;
 mod memory;
 mod memory_id;
