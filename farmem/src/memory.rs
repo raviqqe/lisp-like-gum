@@ -3,7 +3,6 @@ use std::collections::BTreeMap;
 
 use mpi;
 use mpi::environment::Universe;
-use mpi::topology::SystemCommunicator;
 use mpi::traits::*;
 
 use global_address::GlobalAddress;
@@ -23,21 +22,18 @@ pub struct Memory {
   globals: BTreeMap<GlobalAddress, LocalAddress>,
   serder: Serder,
   transceiver: Transceiver,
-  world: SystemCommunicator,
   _universe: Universe,
 }
 
 impl Memory {
   pub fn new() -> Self {
     let u = mpi::initialize().unwrap();
-    let w = u.world();
 
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
       globals: BTreeMap::new(),
       serder: Serder::new(),
-      transceiver: Transceiver::new(w),
-      world: w,
+      transceiver: Transceiver::new(u.world()),
       _universe: u,
     }
   }
