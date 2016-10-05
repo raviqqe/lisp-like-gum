@@ -94,9 +94,10 @@ impl Memory {
   }
 
   pub fn feed(&self, d: demand::Demand, r: Ref) {
+    let a = r.local_address();
     let m = Feed {
-      global_address: r.global_address(),
-      object: self.type_manager.serialize(r.local_address()),
+      reference: r,
+      object: self.type_manager.serialize(a),
     };
 
     self.transceiver.send(d.memory_id(), m);
@@ -138,7 +139,7 @@ impl Memory {
         }
 
         Demand { from } => unimplemented!(), // send Notice
-        Feed { global_address, object } => unimplemented!(), // feed
+        Feed { reference, object } => unimplemented!(), // send Notice
 
         AddWeight { local_address, delta } => local_address.add_weight(delta),
         SubWeight { local_address, delta } => {

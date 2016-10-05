@@ -1,6 +1,7 @@
 use local_address::LocalAddress;
 use global_address::GlobalAddress;
 use memory_id::MemoryId;
+use reference::Ref;
 use serialized_object::SerializedObject;
 use weight::Weight;
 
@@ -12,7 +13,7 @@ pub enum Message {
   Resume { global_address: GlobalAddress, object: SerializedObject },
 
   Demand { from: MemoryId },
-  Feed { global_address: GlobalAddress, object: SerializedObject },
+  Feed { reference: Ref, object: SerializedObject },
 
   AddWeight { local_address: LocalAddress, delta: Weight },
   SubWeight { local_address: LocalAddress, delta: Weight },
