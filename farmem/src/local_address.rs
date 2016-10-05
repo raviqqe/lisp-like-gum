@@ -50,10 +50,14 @@ impl LocalAddress {
 
   pub fn sub_weight(&self, w: Weight) {
     *self.weight_mut() -= w;
+  }
 
-    if *self.weight_mut() == Weight::default() {
-      unsafe { free(self.0 as *mut c_void) }
-    }
+  pub fn is_orphan(&self) -> bool {
+    *self.weight_mut() == Weight::default()
+  }
+
+  pub fn free(&self) {
+    unsafe { free(self.0 as *mut c_void) }
   }
 
   fn type_id_mut(&self) -> &mut TypeId {

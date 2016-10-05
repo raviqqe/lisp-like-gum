@@ -124,11 +124,24 @@ impl Memory {
         }
         Demand { from } => unimplemented!(), // send Notice
         Resume { global_address, object } => {
-          self.globals.insert(global_address, self.type_manager.deserialize(object));
+          self.globals.insert(global_address,
+                              self.type_manager.deserialize(object));
         }
 
         AddWeight { local_address, delta } => local_address.add_weight(delta),
-        SubWeight { local_address, delta } => local_address.sub_weight(delta),
+        SubWeight { local_address, delta } => {
+          local_address.sub_weight(delta);
+
+          if local_address.is_orphan() {
+            for r in self.type_manager.extract_refs(
+                local_address.type_id(),
+                local_address.unknown_object_ptr()) {
+              self.delete_ref(r);
+            }
+
+            local_address.free();
+          }
+        },
       }
     }
   }
