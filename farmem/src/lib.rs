@@ -26,6 +26,4 @@ mod transceiver;
 mod type_id;
 mod weight;
 
-// mod message;
-
 pub use memory::Memory;
