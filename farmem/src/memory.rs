@@ -20,7 +20,7 @@ use weight::Weight;
 
 pub struct Memory {
   id: MemoryId,
-  globals: BTreeMap<GlobalAddress, Box<Any>>,
+  globals: BTreeMap<GlobalAddress, LocalAddress>,
   serder: Serder,
   transceiver: Transceiver,
   world: SystemCommunicator,
@@ -54,7 +54,7 @@ impl Memory {
       Some(r.local_address().into())
     } else {
       match self.globals.get(&r.global_address()) {
-        Some(b) => b.downcast_ref(),
+        Some(a) => Some((*a).into()),
         None => {
           unimplemented!() // self.send_fetch()
         }
@@ -67,7 +67,7 @@ impl Memory {
       Some(r.local_address().into())
     } else {
       match self.globals.get_mut(&r.global_address()) {
-        Some(b) => b.downcast_mut(),
+        Some(a) => Some((*a).into()),
         None => {
           unimplemented!() // self.send_fetch()
         }
@@ -100,17 +100,20 @@ impl Memory {
     unimplemented!()
   }
 
-  fn process_messages(&self) {
+  fn process_messages(&mut self) {
     while let Some(m) = self.transceiver.receive() {
       match m {
-        _ => unimplemented!(),
+        Fetch { from, local_address } => unimplemented!(),
+        Demand { from } => unimplemented!(),
+        Resume { global_address, object } => {
+          self.globals.insert(global_address, self.serder.deserialize(object));
+        }
+
+        AddWeight { local_address, delta } => local_address.add_weight(delta),
+        SubWeight { local_address, delta } => local_address.sub_weight(delta),
       }
     }
   }
-
-  // pub fn store_global(&mut self, a: GlobalAddress, o: Box<Object>) {
-  //   self.globals.insert(a, o.into());
-  // }
 
   // pub fn add_weight(&self, mut a: LocalAddress, dw: Weight) {
   //   a.add_weight(dw);
