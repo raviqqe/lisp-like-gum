@@ -31,4 +31,8 @@ impl Ref {
   pub fn split_weight(&mut self) -> (Weight, Option<Weight>) {
     self.weight.split()
   }
+
+  pub fn delete(self) -> (GlobalAddress, Weight) {
+    (self.global_address, self.weight)
+  }
 }

@@ -96,8 +96,10 @@ impl Memory {
   }
 
   fn delete_ref(&self, r: Ref) {
-    // self.transceiver.send(r.memory_id(), SubWeight { local_address: r.local_address(), weight: r.weight() })
-    unimplemented!()
+    let (a, w) = r.delete();
+    self.transceiver.send(
+        a.memory_id(),
+        SubWeight { local_address: a.local_address(), delta: w });
   }
 
   fn process_messages(&mut self) {
