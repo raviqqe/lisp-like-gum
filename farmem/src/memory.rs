@@ -105,7 +105,16 @@ impl Memory {
   fn process_messages(&mut self) {
     while let Some(m) = self.transceiver.receive() {
       match m {
-        Fetch { from, local_address } => unimplemented!(),
+        Fetch { from, local_address } => {
+          let o = self.serder.serialize(local_address.type_id(),
+                                        local_address.object_pointer());
+          let m = Resume {
+            global_address: GlobalAddress::new(self.id, local_address),
+            object: o,
+          };
+
+          self.transceiver.send(from, m);
+        }
         Demand { from } => unimplemented!(),
         Resume { global_address, object } => {
           self.globals.insert(global_address, self.serder.deserialize(object));
