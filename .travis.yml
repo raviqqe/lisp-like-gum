@@ -1,0 +1,36 @@
+sudo: false
+
+language: rust
+rust:
+  - nightly-2016-09-27
+
+install:
+  - wget --no-check-certificate https://www.open-mpi.org/software/ompi/v2.0/downloads/$OPENMPI_SLUG.tar.gz &&
+    tar xf $OPENMPI_SLUG.tar.gz &&
+    (
+      cd $OPENMPI_SLUG &&
+      ./configure --enable-shared --prefix=$MPI_PREFIX &&
+      make install
+    )
+  - export PATH=$PATH:$MPI_PREFIX/bin
+  - export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MPI_PREFIX/lib
+  - pip install --user ghp-import
+
+script:
+  - (cd farmem && cargo build -v && cargo test -v)
+
+after_success: |
+  [ $TRAVIS_BRANCH = master -a $TRAVIS_PULL_REQUEST = false ] &&
+  (
+    cd farmem &&
+    cargo doc &&
+    echo "<meta http-equiv=refresh content=0;url=farmem/index.html>" > target/doc/index.html &&
+    ghp-import -n target/doc
+  ) &&
+  git push -fq https://${GH_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git gh-pages
+
+env:
+  global:
+    - OPENMPI_SLUG=openmpi-2.0.1
+    - MPI_PREFIX=$HOME/mpi
+    - secure: NOZ3jyX2j2RvP4tD7s5OHc46kGKk1sokH3KxCcDDJo9r7Rw0ZZY/+sM/D40b0x3ZO6fj0zGJR8t1LKvkFjFcW5ZXSr1SrRP2fqcOqzfZMBuMQ+wQnImndhW3yi9LM2qQrpxTVuLdkxXzI10odzAkkrvQQCHLqlPqcIOPGPho/Pjf8n8DdCxyvQKeSc5zarp7GjSor1wVr2wOoAmoO5uAF/kJkb7iXBJIiDOLKVgX9A7R6FA1DEQXn5XGO+FW0XB9lM62eXByivnU26SeTpFKeDOKJxBkFAPOwg3+nvJTmAZE/2BSPRdi2x/++2qCpKbEZIAF2KfLW457YID3l8tC8zqdfb0PxDxTL9q4CFA4+9fEpiprbl5MR3mgduJBnENbvgGuk08BUnHwto+ct7bUac83JCLM6kPyfH6fQ+QGGF8fFFiZgLl+ZfT82qxe5JDiSwnrUooo2izhly9UCObTLg1KKKtkP+Oc09WTjMGZdmyLUAh6ZMQVog8Au9jEMGeHFZzoa8LjKbARtpKjZjwgZNsl6oiT5YuSDFClJQsT20uIp2lToOsM3y3PJY/t3s3E+piEayStCAv4kBsqsk8H30ZzMJR3eZuCCcnWHZHeiWinMJ/VP+Z/BFMqLI4zWL211jrdvZuBwLnkWvEqNKuMqxFppc1PfSQroN3ltRIXJEw=
