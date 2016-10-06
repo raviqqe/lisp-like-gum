@@ -141,7 +141,9 @@ impl Memory {
                               self.type_manager.deserialize(object));
         }
 
-        Demand { from } => unimplemented!(), // send Notice
+        Demand { from } => {
+          self.notices.push_back(Notice::Demand(demand::Demand::new(from)))
+        }
         Feed { reference, object } => {
           self.globals.insert(reference.global_address(),
                               self.type_manager.deserialize(object));
