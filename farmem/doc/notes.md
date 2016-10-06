@@ -12,4 +12,4 @@
   - Memory.locals and LocalAddress /= raw pointer?
 
 - Fetch and Load messages?
-  - No. Because they represents the same concept inherently.
+  - No. Because they represent the same concept inherently.
