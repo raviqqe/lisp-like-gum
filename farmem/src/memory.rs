@@ -1,5 +1,5 @@
 use std::any::Any;
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, VecDeque};
 
 use mpi;
 use mpi::environment::Universe;
@@ -13,6 +13,7 @@ use load_result::LoadResult;
 use local_address::LocalAddress;
 use memory_id::MemoryId;
 use message::Message::*;
+use notice::Notice;
 use object::Object;
 use reference::{Ref, FriendlyRef};
 use type_manager::TypeManager;
@@ -26,6 +27,7 @@ pub struct Memory {
   globals: BTreeMap<GlobalAddress, LocalAddress>,
   type_manager: TypeManager,
   transceiver: Transceiver,
+  notices: VecDeque<Notice>,
   _universe: Universe,
 }
 
@@ -38,6 +40,7 @@ impl Memory {
       globals: BTreeMap::new(),
       type_manager: TypeManager::new(),
       transceiver: Transceiver::new(u.world()),
+      notices: VecDeque::new(),
       _universe: u,
     }
   }
@@ -139,7 +142,11 @@ impl Memory {
         }
 
         Demand { from } => unimplemented!(), // send Notice
-        Feed { reference, object } => unimplemented!(), // send Notice
+        Feed { reference, object } => {
+          self.globals.insert(reference.global_address(),
+                              self.type_manager.deserialize(object));
+          self.notices.push_back(Notice::Feed(reference));
+        },
 
         AddWeight { local_address, delta } => local_address.add_weight(delta),
         SubWeight { local_address, delta } => {
