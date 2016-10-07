@@ -29,4 +29,8 @@ mod type_;
 mod type_id;
 mod weight;
 
+pub use demand::Demand;
+pub use load_error::LoadError;
 pub use memory::Memory;
+pub use notice::Notice;
+pub use reference::Ref;
