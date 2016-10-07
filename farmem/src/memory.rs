@@ -25,6 +25,7 @@ use weight::Weight;
 pub struct Memory {
   id: MemoryId,
   globals: BTreeMap<GlobalAddress, LocalAddress>,
+  moved: BTreeMap<LocalAddress, GlobalAddress>,
   type_manager: TypeManager,
   transceiver: Transceiver,
   notices: VecDeque<Notice>,
@@ -38,6 +39,7 @@ impl Memory {
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
       globals: BTreeMap::new(),
+      moved: BTreeMap::new(),
       type_manager: TypeManager::new(),
       transceiver: Transceiver::new(u.world()),
       notices: VecDeque::new(),
