@@ -154,12 +154,12 @@ impl Memory {
           self.globals.insert(reference.global_address(),
                               self.type_manager.deserialize(object));
           self.notices.push_back(Notice::Feed(reference));
-        },
+        }
         Moved { from, to } => unimplemented!(),
 
         AddWeight { local_id, delta } => {
           self.local_map[local_id].add_weight(delta)
-        },
+        }
         SubWeight { local_id, delta } => {
           let a = self.local_map[local_id];
 
@@ -173,7 +173,7 @@ impl Memory {
             self.local_map.unmap(local_id);
             a.free();
           }
-        },
+        }
       }
     }
   }
