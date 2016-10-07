@@ -177,7 +177,7 @@ impl Memory {
     }
   }
 
-  pub fn get_notice(&mut self) -> Option<Notice> {
+  pub fn receive_notice(&mut self) -> Option<Notice> {
     self.process_messages();
     self.notices.pop_front()
   }
