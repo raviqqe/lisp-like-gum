@@ -84,11 +84,12 @@ impl Memory {
   }
 
   pub fn is_cached(&mut self, r: &Ref) -> bool {
+    self.process_messages();
+
     if r.memory_id() == self.id
         || self.globals.contains_key(&r.global_address()) {
       true
     } else {
-      self.process_messages();
       false
     }
   }
