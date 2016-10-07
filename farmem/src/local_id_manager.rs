@@ -9,6 +9,7 @@ pub struct LocalIdManager {
 }
 
 impl LocalIdManager {
+  #[allow(dead_code)]
   pub fn new() -> Self {
     LocalIdManager::default()
   }
