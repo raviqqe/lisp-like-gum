@@ -11,6 +11,7 @@ extern crate rand;
 extern crate serde;
 extern crate serde_cbor;
 
+mod cell;
 mod demand;
 mod global_address;
 mod load_error;
