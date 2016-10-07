@@ -33,4 +33,5 @@ pub use demand::Demand;
 pub use load_error::LoadError;
 pub use memory::Memory;
 pub use notice::Notice;
+pub use object::Object;
 pub use reference::Ref;
