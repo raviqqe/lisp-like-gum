@@ -98,7 +98,7 @@ impl Memory {
 
   pub fn feed(&self, d: demand::Demand, r: Ref) {
     let a = r.local_address();
-    let m = Feed {
+    let m = Move {
       reference: r,
       object: self.type_manager.serialize(a),
     };
@@ -144,11 +144,12 @@ impl Memory {
         Demand { from } => {
           self.notices.push_back(Notice::Demand(demand::Demand::new(from)))
         }
-        Feed { reference, object } => {
+        Move { reference, object } => {
           self.globals.insert(reference.global_address(),
                               self.type_manager.deserialize(object));
           self.notices.push_back(Notice::Feed(reference));
         },
+        Moved { from, to } => unimplemented!(),
 
         AddWeight { local_address, delta } => local_address.add_weight(delta),
         SubWeight { local_address, delta } => {

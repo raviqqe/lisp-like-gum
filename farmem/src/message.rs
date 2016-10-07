@@ -13,7 +13,8 @@ pub enum Message {
   Resume { global_address: GlobalAddress, object: SerializedObject },
 
   Demand { from: MemoryId },
-  Feed { reference: Ref, object: SerializedObject },
+  Move { reference: Ref, object: SerializedObject },
+  Moved { from: GlobalAddress, to: GlobalAddress },
 
   AddWeight { local_address: LocalAddress, delta: Weight },
   SubWeight { local_address: LocalAddress, delta: Weight },
