@@ -14,9 +14,13 @@ impl LocalIdManager {
   }
 
   pub fn new_id(&mut self) -> LocalId {
-    let i = self.max;
-    self.max.increment();
-    i
+    if let Some(i) = self.used.pop() {
+      i
+    } else {
+      let i = self.max;
+      self.max.increment();
+      i
+    }
   }
 
   pub fn return_id(&mut self, i: LocalId) {
