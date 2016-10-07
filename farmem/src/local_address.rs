@@ -18,8 +18,7 @@ fn max_size_of<T>() -> usize {
   ((size_of::<T>() + MAX_ALIGN - 1) % MAX_ALIGN) * MAX_ALIGN
 }
 
-#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd,
-         Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Eq, PartialEq, Ord, PartialOrd)]
 pub struct LocalAddress(u64);
 
 impl LocalAddress {
