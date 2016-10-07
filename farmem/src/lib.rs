@@ -16,6 +16,7 @@ mod global_address;
 mod load_error;
 mod load_result;
 mod local_id;
+mod local_id_manager;
 mod local_address;
 mod memory;
 mod memory_id;
