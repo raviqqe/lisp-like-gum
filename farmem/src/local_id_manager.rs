@@ -9,17 +9,17 @@ pub struct LocalIdManager {
 }
 
 impl LocalIdManager {
-  fn new() -> Self {
+  pub fn new() -> Self {
     LocalIdManager::default()
   }
 
-  fn new_id(&mut self) -> LocalId {
+  pub fn new_id(&mut self) -> LocalId {
     let i = self.max;
     self.max.increment();
     i
   }
 
-  fn return_id(&mut self, i: LocalId) {
+  pub fn return_id(&mut self, i: LocalId) {
     self.used.push(i);
   }
 }
