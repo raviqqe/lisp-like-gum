@@ -1,4 +1,6 @@
 # To-do list
 
 - Send `Resume { Vec<(GlobalAddress, SerializedObject)> }`
-  using `Type.nearby_refs()`
+  using `Type.nearby_refs()`.
+- Block unregistered types from storing and loading.
+- Make proper types public.
