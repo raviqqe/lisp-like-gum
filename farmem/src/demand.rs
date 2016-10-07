@@ -2,7 +2,7 @@ use memory_id::MemoryId;
 
 
 
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone)]
 pub struct Demand(MemoryId);
 
 pub trait FriendlyDemand {
