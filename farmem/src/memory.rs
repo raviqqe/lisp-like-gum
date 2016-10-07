@@ -170,6 +170,7 @@ impl Memory {
               self.delete_ref(r);
             }
 
+            self.local_map.unmap(local_id);
             a.free();
           }
         },

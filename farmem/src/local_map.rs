@@ -26,9 +26,9 @@ impl LocalMap {
     i
   }
 
-  pub fn unmap(&mut self, a: LocalAddress) {
-    let i = self.address_to_id.remove(&a).unwrap();
-    let _ = self.id_to_address.remove(&i);
+  pub fn unmap(&mut self, i: LocalId) {
+    let a = self.id_to_address.remove(&i).unwrap();
+    let _ = self.address_to_id.remove(&a);
     self.id_manager.return_id(i);
   }
 }
