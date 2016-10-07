@@ -1,5 +1,5 @@
+use local_id::LocalId;
 use memory_id::MemoryId;
-use local_address::LocalAddress;
 
 
 
@@ -7,14 +7,14 @@ use local_address::LocalAddress;
          Serialize, Deserialize)]
 pub struct GlobalAddress {
   memory_id: MemoryId,
-  local_address: LocalAddress,
+  local_id: LocalId,
 }
 
 impl GlobalAddress {
-  pub fn new(i: MemoryId, a: LocalAddress) -> Self {
-    GlobalAddress { memory_id: i, local_address: a }
+  pub fn new(m: MemoryId, l: LocalId) -> Self {
+    GlobalAddress { memory_id: m, local_id: l }
   }
 
   pub fn memory_id(&self) -> MemoryId { self.memory_id }
-  pub fn local_address(&self) -> LocalAddress { self.local_address }
+  pub fn local_id(&self) -> LocalId { self.local_id }
 }

@@ -51,35 +51,35 @@ impl Memory {
     }
   }
 
-  pub fn store<T: Any>(&self, o: T) -> Ref {
+  pub fn store<T: Any>(&mut self, o: T) -> Ref {
     let a = LocalAddress::new(o);
     let w = Weight::new();
     a.add_weight(w);
-    Ref::new(GlobalAddress::new(self.id, a), w)
+    Ref::new(GlobalAddress::new(self.id, self.local_map.map(a)), w)
   }
 
   pub fn load<T: Any>(&mut self, r: &Ref) -> LoadResult<&T> {
     if self.is_cached(r) {
-      (if self.id == r.memory_id() { r.local_address() }
+      (if self.id == r.memory_id() { self.local_map[r.local_id()] }
        else { self.globals[&r.global_address()] })
       .object::<T>().map(|p| unsafe { &*p }).ok_or(TypeMismatch)
     } else {
       self.transceiver.send(
           r.memory_id(),
-          Fetch { from: self.id, local_address: r.local_address() });
+          Fetch { from: self.id, local_id: r.local_id() });
       Err(NotCached)
     }
   }
 
   pub fn load_mut<T: Any>(&mut self, r: &Ref) -> LoadResult<&mut T> {
     if self.is_cached(r) {
-      (if self.id == r.memory_id() { r.local_address() }
+      (if self.id == r.memory_id() { self.local_map[r.local_id()] }
        else { self.globals[&r.global_address()] })
       .object_mut::<T>().map(|p| unsafe { &mut *p}).ok_or(TypeMismatch)
     } else {
       self.transceiver.send(
           r.memory_id(),
-          Fetch { from: self.id, local_address: r.local_address() });
+          Fetch { from: self.id, local_id: r.local_id() });
       Err(NotCached)
     }
   }
@@ -103,7 +103,7 @@ impl Memory {
   }
 
   pub fn feed(&self, d: demand::Demand, r: Ref) {
-    let a = r.local_address();
+    let a = self.local_map[r.local_id()];
     let m = Move {
       reference: r,
       object: self.type_manager.serialize(a),
@@ -116,7 +116,7 @@ impl Memory {
     let (w, dw) = r.split_weight();
 
     if let Some(dw) = dw {
-      let m = AddWeight { local_address: r.local_address(), delta: dw };
+      let m = AddWeight { local_id: r.local_id(), delta: dw };
       self.transceiver.send(r.memory_id(), m);
     }
 
@@ -127,16 +127,16 @@ impl Memory {
     let (a, w) = r.delete();
     self.transceiver.send(
         a.memory_id(),
-        SubWeight { local_address: a.local_address(), delta: w });
+        SubWeight { local_id: a.local_id(), delta: w });
   }
 
   fn process_messages(&mut self) {
     while let Some(m) = self.transceiver.receive() {
       match m {
-        Fetch { from, local_address } => {
-          let o = self.type_manager.serialize(local_address);
+        Fetch { from, local_id } => {
+          let o = self.type_manager.serialize(self.local_map[local_id]);
           let m = Resume {
-            global_address: GlobalAddress::new(self.id, local_address),
+            global_address: GlobalAddress::new(self.id, local_id),
             object: o,
           };
 
@@ -157,16 +157,20 @@ impl Memory {
         },
         Moved { from, to } => unimplemented!(),
 
-        AddWeight { local_address, delta } => local_address.add_weight(delta),
-        SubWeight { local_address, delta } => {
-          local_address.sub_weight(delta);
+        AddWeight { local_id, delta } => {
+          self.local_map[local_id].add_weight(delta)
+        },
+        SubWeight { local_id, delta } => {
+          let a = self.local_map[local_id];
 
-          if local_address.is_orphan() {
-            for r in self.type_manager.extract_refs(local_address) {
+          a.sub_weight(delta);
+
+          if a.is_orphan() {
+            for r in self.type_manager.extract_refs(a) {
               self.delete_ref(r);
             }
 
-            local_address.free();
+            a.free();
           }
         },
       }
