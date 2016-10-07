@@ -12,6 +12,7 @@ use load_error::LoadError::*;
 use load_result::LoadResult;
 use local_address::LocalAddress;
 use local_id::LocalId;
+use local_map::LocalMap;
 use memory_id::MemoryId;
 use message::Message::*;
 use notice::Notice;
@@ -25,7 +26,7 @@ use weight::Weight;
 
 pub struct Memory {
   id: MemoryId,
-  locals: BTreeMap<LocalId, LocalAddress>,
+  local_map: LocalMap,
   globals: BTreeMap<GlobalAddress, LocalAddress>,
   moved: BTreeMap<LocalAddress, GlobalAddress>,
   type_manager: TypeManager,
@@ -40,7 +41,7 @@ impl Memory {
 
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
-      locals: BTreeMap::new(),
+      local_map: LocalMap::new(),
       globals: BTreeMap::new(),
       moved: BTreeMap::new(),
       type_manager: TypeManager::new(),
