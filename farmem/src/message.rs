@@ -11,10 +11,11 @@ use weight::Weight;
 pub enum Message {
   Fetch  { from: MemoryId, local_id: LocalId  },
   Resume { global_address: GlobalAddress, object: SerializedObject },
+  Moved { from: GlobalAddress, to: GlobalAddress },
 
   Demand { from: MemoryId },
   Move { reference: Ref, object: SerializedObject },
-  Moved { from: GlobalAddress, to: GlobalAddress },
+  Ack { from: LocalId, to: GlobalAddress },
 
   AddWeight { local_id: LocalId, delta: Weight },
   SubWeight { local_id: LocalId, delta: Weight },

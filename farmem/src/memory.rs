@@ -162,6 +162,7 @@ impl Memory {
           self.globals.insert(global_address,
                               self.type_manager.deserialize(object));
         }
+        Moved { from, to } => unimplemented!(),
 
         Demand { from } => {
           self.notices.push_back(Notice::Demand(demand::Demand::new(from)))
@@ -171,7 +172,7 @@ impl Memory {
                               self.type_manager.deserialize(object));
           self.notices.push_back(Notice::Feed(reference));
         }
-        Moved { from, to } => unimplemented!(),
+        Ack { from, to } => unimplemented!(),
 
         AddWeight { local_id, delta } => {
           self.locals[local_id].add_weight(delta)
