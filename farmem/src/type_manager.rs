@@ -3,7 +3,7 @@ use std::any::Any;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use local_address::LocalAddress;
+use cell::Cell;
 use object::Object;
 use reference::Ref;
 use serialized_object::SerializedObject;
@@ -33,18 +33,18 @@ impl TypeManager {
     self.from_builtin_id.insert(any::TypeId::of::<T>(), t);
   }
 
-  pub fn extract_refs(&self, a: LocalAddress) -> Vec<Ref> {
-    self.from_builtin_id[&a.type_id()].extract_refs(a.unknown_object_ptr())
+  pub fn extract_refs(&self, c: &Cell) -> Vec<Ref> {
+    self.from_builtin_id[&c.type_id()].extract_refs(c.unknown_object_ptr())
   }
 
-  pub fn serialize(&self, a: LocalAddress) -> SerializedObject {
-    self.from_builtin_id[&a.type_id()].serialize(a.unknown_object_ptr())
+  pub fn serialize(&self, c: &Cell) -> SerializedObject {
+    self.from_builtin_id[&c.type_id()].serialize(c.unknown_object_ptr())
   }
 
-  pub fn deserialize(&self, s: SerializedObject) -> LocalAddress {
+  pub fn deserialize(&self, s: SerializedObject) -> Cell {
     let t = &self.from_id[&s.type_id()];
-    let a = LocalAddress::uninitialized(t.size(), t.builtin_id());
-    t.deserialize(s.data(), a.unknown_object_ptr());
-    a
+    let c = Cell::uninitialized(t.size(), t.builtin_id());
+    t.deserialize(s.data(), c.unknown_object_ptr());
+    c
   }
 }

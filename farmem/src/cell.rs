@@ -1,37 +1,64 @@
 use std::any::{Any, TypeId};
 use std::mem::size_of;
-use std::ops::Drop;
 
 use libc::{c_void, malloc, free};
 
+use global_address::GlobalAddress;
 use weight::Weight;
+
+use self::CellState::*;
 
 
 
 #[derive(Debug)]
 pub struct Cell {
   weight: Weight,
-  type_id: TypeId,
-  object_ptr: usize,
+  state: CellState,
+}
+
+#[derive(Debug, Copy, Clone)]
+pub enum CellState {
+  Local { type_id: TypeId, object_ptr: usize },
+  Moving,
+  Moved(GlobalAddress),
 }
 
 impl Cell {
   pub fn new<T: Any>(o: T) -> Self {
     let c = Cell::uninitialized(size_of::<T>(), TypeId::of::<T>());
-    unsafe { *(c.object_ptr as *mut T) = o }
+    unsafe { *(c.unknown_object_ptr() as *mut T) = o }
     c
   }
 
   pub fn uninitialized(s: usize, t: TypeId) -> Cell {
     Cell {
       weight: Weight::default(),
-      type_id: t,
-      object_ptr: alloc_memory(s),
+      state: Local { type_id: t, object_ptr: alloc_memory(s) },
     }
   }
 
-  pub fn type_id(&self) -> TypeId {
-    self.type_id
+  pub fn state(&self) -> CellState {
+    self.state
+  }
+
+  pub fn mark_moving(&mut self) -> CellState {
+    let s = self.state;
+
+    match s {
+      Local { object_ptr, .. } => {
+        unsafe { free(object_ptr as *mut c_void) }
+        self.state = Moving;
+        s
+      }
+      _ => panic!("The object was moved!"),
+    }
+  }
+
+  pub fn mark_moved(&mut self, a: GlobalAddress) {
+    match self.state {
+      Moving => self.state = Moved(a),
+      _ => panic!("The state should be Moved!"),
+    }
   }
 
   pub fn add_weight(&mut self, w: Weight) {
@@ -46,6 +73,20 @@ impl Cell {
     self.weight == Weight::default()
   }
 
+  pub fn type_id(&self) -> TypeId {
+    match self.state {
+      Local { type_id, .. } => type_id,
+      _ => panic!("The object was moved!"),
+    }
+  }
+
+  pub fn unknown_object_ptr(&self) -> usize {
+    match self.state {
+      Local { object_ptr, .. } => object_ptr,
+      _ => panic!("The object was moved!"),
+    }
+  }
+
   pub fn object<T: Any>(&self) -> Option<*const T> {
     self.object_ptr(TypeId::of::<T>()).map(|p| p as *const T)
   }
@@ -55,17 +96,14 @@ impl Cell {
   }
 
   fn object_ptr(&self, t: TypeId) -> Option<usize> {
-    if self.type_id == t {
-      Some(self.object_ptr)
-    } else {
-      None
+    match self.state {
+      Local { type_id, object_ptr } => if type_id == t {
+        Some(object_ptr)
+      } else {
+        None
+      },
+      _ => panic!("The object was moved!"),
     }
-  }
-}
-
-impl Drop for Cell {
-  fn drop(&mut self) {
-    unsafe { free(self.object_ptr as *mut c_void) }
   }
 }
 

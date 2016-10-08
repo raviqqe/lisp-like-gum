@@ -1,17 +1,17 @@
-use std::any::Any;
+use std::any::{Any, TypeId};
 use std::collections::{BTreeMap, VecDeque};
 
 use mpi;
 use mpi::environment::Universe;
 use mpi::traits::*;
 
+use cell::{Cell, CellState};
 use demand;
 use demand::FriendlyDemand;
 use global_address::GlobalAddress;
 use load_error::LoadError::*;
 use load_result::LoadResult;
-use local_address::LocalAddress;
-use local_map::LocalMap;
+use local_cells::LocalCells;
 use memory_id::MemoryId;
 use message::Message::*;
 use notice::Notice;
@@ -25,9 +25,8 @@ use weight::Weight;
 
 pub struct Memory {
   id: MemoryId,
-  local_map: LocalMap,
-  globals: BTreeMap<GlobalAddress, LocalAddress>,
-  moved: BTreeMap<LocalAddress, GlobalAddress>,
+  locals: LocalCells,
+  globals: BTreeMap<GlobalAddress, Cell>,
   type_manager: TypeManager,
   transceiver: Transceiver,
   notices: VecDeque<Notice>,
@@ -40,9 +39,8 @@ impl Memory {
 
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
-      local_map: LocalMap::new(),
+      locals: LocalCells::new(),
       globals: BTreeMap::new(),
-      moved: BTreeMap::new(),
       type_manager: TypeManager::new(),
       transceiver: Transceiver::new(u.world()),
       notices: VecDeque::new(),
@@ -51,17 +49,26 @@ impl Memory {
   }
 
   pub fn store<T: Any>(&mut self, o: T) -> Ref {
-    let a = LocalAddress::new(o);
+    let i = self.locals.store(o);
     let w = Weight::new();
-    a.add_weight(w);
-    Ref::new(GlobalAddress::new(self.id, self.local_map.map(a)), w)
+    self.locals[i].add_weight(w);
+    Ref::new(GlobalAddress::new(self.id, i), w)
   }
 
   pub fn load<T: Any>(&mut self, r: &Ref) -> LoadResult<&T> {
     if self.is_cached(r) {
-      (if self.id == r.memory_id() { self.local_map[r.local_id()] }
-       else { self.globals[&r.global_address()] })
-      .object::<T>().map(|p| unsafe { &*p }).ok_or(TypeMismatch)
+      match (if self.id == r.memory_id() { &self.locals[r.local_id()] }
+             else { &self.globals[&r.global_address()] }).state() {
+        CellState::Local { type_id, object_ptr } => {
+          if TypeId::of::<T>() == type_id {
+            Ok(unsafe { &*(object_ptr as *const T) })
+          } else {
+            Err(TypeMismatch)
+          }
+        }
+        CellState::Moving => unimplemented!(),
+        CellState::Moved(_) => unimplemented!(),
+      }
     } else {
       self.transceiver.send(
           r.memory_id(),
@@ -72,9 +79,18 @@ impl Memory {
 
   pub fn load_mut<T: Any>(&mut self, r: &Ref) -> LoadResult<&mut T> {
     if self.is_cached(r) {
-      (if self.id == r.memory_id() { self.local_map[r.local_id()] }
-       else { self.globals[&r.global_address()] })
-      .object_mut::<T>().map(|p| unsafe { &mut *p}).ok_or(TypeMismatch)
+      match (if self.id == r.memory_id() { &self.locals[r.local_id()] }
+             else { &self.globals[&r.global_address()] }).state() {
+        CellState::Local { type_id, object_ptr } => {
+          if TypeId::of::<T>() == type_id {
+            Ok(unsafe { &mut *(object_ptr as *mut T) })
+          } else {
+            Err(TypeMismatch)
+          }
+        }
+        CellState::Moving => unimplemented!(),
+        CellState::Moved(_) => unimplemented!(),
+      }
     } else {
       self.transceiver.send(
           r.memory_id(),
@@ -103,10 +119,10 @@ impl Memory {
   }
 
   pub fn feed(&self, d: demand::Demand, r: Ref) {
-    let a = self.local_map[r.local_id()];
+    let i = r.local_id();
     let m = Move {
       reference: r,
-      object: self.type_manager.serialize(a),
+      object: self.type_manager.serialize(&self.locals[i]),
     };
 
     self.transceiver.send(d.memory_id(), m);
@@ -134,7 +150,7 @@ impl Memory {
     while let Some(m) = self.transceiver.receive() {
       match m {
         Fetch { from, local_id } => {
-          let o = self.type_manager.serialize(self.local_map[local_id]);
+          let o = self.type_manager.serialize(&self.locals[local_id]);
           let m = Resume {
             global_address: GlobalAddress::new(self.id, local_id),
             object: o,
@@ -158,20 +174,17 @@ impl Memory {
         Moved { from, to } => unimplemented!(),
 
         AddWeight { local_id, delta } => {
-          self.local_map[local_id].add_weight(delta)
+          self.locals[local_id].add_weight(delta)
         }
         SubWeight { local_id, delta } => {
-          let a = self.local_map[local_id];
+          self.locals[local_id].sub_weight(delta);
 
-          a.sub_weight(delta);
-
-          if a.is_orphan() {
-            for r in self.type_manager.extract_refs(a) {
+          if self.locals[local_id].is_orphan() {
+            for r in self.type_manager.extract_refs(&self.locals[local_id]) {
               self.delete_ref(r);
             }
 
-            self.local_map.unmap(local_id);
-            a.free();
+            self.locals.delete(local_id);
           }
         }
       }
