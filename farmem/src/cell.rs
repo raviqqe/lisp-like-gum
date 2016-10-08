@@ -4,6 +4,8 @@ use std::mem::size_of;
 use libc::{c_void, malloc, free};
 
 use global_address::GlobalAddress;
+use serialized_object::SerializedObject;
+use type_manager::TypeManager;
 use weight::Weight;
 
 use self::CellState::*;
@@ -41,14 +43,13 @@ impl Cell {
     self.state
   }
 
-  pub fn mark_moving(&mut self) -> CellState {
-    let s = self.state;
-
-    match s {
+  pub fn mark_moving(&mut self, t: &TypeManager) -> SerializedObject {
+    match self.state {
       Local { object_ptr, .. } => {
+        let o = t.serialize(self);
         unsafe { free(object_ptr as *mut c_void) }
         self.state = Moving;
-        s
+        o
       }
       _ => panic!("The object was moved!"),
     }
@@ -103,6 +104,14 @@ impl Cell {
         None
       },
       _ => panic!("The object was moved!"),
+    }
+  }
+}
+
+impl Drop for Cell {
+  fn drop(&mut self) {
+    if let Local { object_ptr, .. } = self.state {
+      unsafe { free(object_ptr as *mut c_void) }
     }
   }
 }
