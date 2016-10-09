@@ -167,7 +167,7 @@ impl Memory {
           self.globals.store(global_address,
                              self.type_manager.deserialize(object));
         }
-        Moved { from, to } => unimplemented!(),
+        Moved { from, to } => self.globals.store(from, GlobalCell::Moved(to)),
 
         Demand { from } => {
           self.notices.push_back(Notice::Demand(demand::Demand::new(from)))
