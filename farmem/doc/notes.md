@@ -13,3 +13,18 @@
 
 - Fetch and Load messages?
   - No. Because they represent the same concept inherently.
+
+
+## States of cells
+
+### Local cells
+
+```
+Local [ -> Moving -> Moved ]
+```
+
+### Global cells
+
+```
+[ Moved -> ] Local
+```
