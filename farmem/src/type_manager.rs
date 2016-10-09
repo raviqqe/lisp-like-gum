@@ -3,6 +3,7 @@ use std::any::Any;
 use std::collections::HashMap;
 use std::rc::Rc;
 
+use global_cell::GlobalCell;
 use local_cell::LocalCell;
 use object::Object;
 use reference::Ref;
@@ -41,9 +42,9 @@ impl TypeManager {
     self.from_builtin_id[&c.type_id()].serialize(c.unknown_object_ptr())
   }
 
-  pub fn deserialize(&self, s: SerializedObject) -> LocalCell {
+  pub fn deserialize(&self, s: SerializedObject) -> GlobalCell {
     let t = &self.from_id[&s.type_id()];
-    let c = LocalCell::uninitialized(t.size(), t.builtin_id());
+    let c = GlobalCell::uninitialized(t.size(), t.builtin_id());
     t.deserialize(s.data(), c.unknown_object_ptr());
     c
   }

@@ -1,5 +1,5 @@
 use std::collections::BTreeMap;
-use std::ops::{Index, IndexMut};
+use std::ops::Index;
 
 use global_address::GlobalAddress;
 use global_cell::GlobalCell;
@@ -20,6 +20,14 @@ impl GlobalCells {
   pub fn store(&mut self, a: GlobalAddress, c: GlobalCell)  {
     if let Some(Local { .. }) = self.cells.insert(a, c) {
       panic!("")
+    }
+  }
+
+  pub fn is_local(&self, a: GlobalAddress) -> bool {
+    if let Some(&Local { .. }) = self.cells.get(&a) {
+      true
+    } else {
+      false
     }
   }
 

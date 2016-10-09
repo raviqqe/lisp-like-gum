@@ -1,16 +1,18 @@
 use std::any::{Any, TypeId};
-use std::collections::{BTreeMap, VecDeque};
+use std::collections::VecDeque;
 
 use mpi;
 use mpi::environment::Universe;
 use mpi::traits::*;
 
-use local_cell::{LocalCell, CellState};
 use demand;
 use demand::FriendlyDemand;
+use global_cell::GlobalCell;
+use global_cells::GlobalCells;
 use global_address::GlobalAddress;
 use load_error::LoadError::*;
 use load_result::LoadResult;
+use local_cell::CellState;
 use local_cells::LocalCells;
 use memory_id::MemoryId;
 use message::Message::*;
@@ -26,7 +28,7 @@ use weight::Weight;
 pub struct Memory {
   id: MemoryId,
   locals: LocalCells,
-  globals: BTreeMap<GlobalAddress, LocalCell>,
+  globals: GlobalCells,
   type_manager: TypeManager,
   transceiver: Transceiver,
   notices: VecDeque<Notice>,
@@ -40,7 +42,7 @@ impl Memory {
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
       locals: LocalCells::new(),
-      globals: BTreeMap::new(),
+      globals: GlobalCells::new(),
       type_manager: TypeManager::new(),
       transceiver: Transceiver::new(u.world()),
       notices: VecDeque::new(),
@@ -56,9 +58,15 @@ impl Memory {
   }
 
   pub fn load<T: Any>(&mut self, r: &Ref) -> LoadResult<&T> {
-    if self.is_cached(r) {
-      match (if self.id == r.memory_id() { &self.locals[r.local_id()] }
-             else { &self.globals[&r.global_address()] }).state() {
+    if !self.is_cached(r) {
+      self.transceiver.send(
+          r.memory_id(),
+          Fetch { from: self.id, local_id: r.local_id() });
+      return Err(NotCached)
+    }
+
+    if self.id == r.memory_id() {
+      return match self.locals[r.local_id()].state() {
         CellState::Local { type_id, object_ptr } => {
           if TypeId::of::<T>() == type_id {
             Ok(unsafe { &*(object_ptr as *const T) })
@@ -69,41 +77,38 @@ impl Memory {
         CellState::Moving => unimplemented!(),
         CellState::Moved(_) => unimplemented!(),
       }
-    } else {
-      self.transceiver.send(
-          r.memory_id(),
-          Fetch { from: self.id, local_id: r.local_id() });
-      Err(NotCached)
+    }
+
+    match self.globals[r.global_address()] {
+      GlobalCell::Moved(a) => unimplemented!(),
+      GlobalCell::Local { .. } => unimplemented!(),
     }
   }
 
   pub fn load_mut<T: Any>(&mut self, r: &Ref) -> LoadResult<&mut T> {
-    if self.is_cached(r) {
-      match (if self.id == r.memory_id() { &self.locals[r.local_id()] }
-             else { &self.globals[&r.global_address()] }).state() {
-        CellState::Local { type_id, object_ptr } => {
-          if TypeId::of::<T>() == type_id {
-            Ok(unsafe { &mut *(object_ptr as *mut T) })
-          } else {
-            Err(TypeMismatch)
-          }
+    self.process_messages();
+
+    if r.memory_id() != self.id {
+      return Err(NotCached)
+    }
+
+    match self.locals[r.local_id()].state() {
+      CellState::Local { type_id, object_ptr } => {
+        if TypeId::of::<T>() == type_id {
+          Ok(unsafe { &mut *(object_ptr as *mut T) })
+        } else {
+          Err(TypeMismatch)
         }
-        CellState::Moving => unimplemented!(),
-        CellState::Moved(_) => unimplemented!(),
       }
-    } else {
-      self.transceiver.send(
-          r.memory_id(),
-          Fetch { from: self.id, local_id: r.local_id() });
-      Err(NotCached)
+      CellState::Moving => unimplemented!(),
+      CellState::Moved(_) => unimplemented!(),
     }
   }
 
   pub fn is_cached(&mut self, r: &Ref) -> bool {
     self.process_messages();
 
-    if r.memory_id() == self.id
-        || self.globals.contains_key(&r.global_address()) {
+    if r.memory_id() == self.id || self.globals.is_local(r.global_address()) {
       true
     } else {
       false
@@ -159,8 +164,8 @@ impl Memory {
           self.transceiver.send(from, m);
         }
         Resume { global_address, object } => {
-          self.globals.insert(global_address,
-                              self.type_manager.deserialize(object));
+          self.globals.store(global_address,
+                             self.type_manager.deserialize(object));
         }
         Moved { from, to } => unimplemented!(),
 
@@ -168,8 +173,8 @@ impl Memory {
           self.notices.push_back(Notice::Demand(demand::Demand::new(from)))
         }
         Move { reference, object } => {
-          self.globals.insert(reference.global_address(),
-                              self.type_manager.deserialize(object));
+          self.globals.store(reference.global_address(),
+                             self.type_manager.deserialize(object));
           self.notices.push_back(Notice::Feed(reference));
         }
         Ack { from, to } => unimplemented!(),
