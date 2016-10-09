@@ -25,6 +25,17 @@ use weight::Weight;
 
 
 
+macro_rules! convert_object_ptr {
+  ($T:ty, $t:expr, $p:expr) => {
+    if TypeId::of::<$T>() == $t {
+      Ok(unsafe { &*($p as *const $T) })
+    } else {
+      Err(TypeMismatch)
+    }
+  }
+}
+
+
 pub struct Memory {
   id: MemoryId,
   locals: LocalCells,
@@ -58,59 +69,88 @@ impl Memory {
   }
 
   pub fn load<T: Any>(&mut self, r: &Ref) -> LoadResult<&T> {
-    if !self.is_cached(r) {
-      self.transceiver.send(r.memory_id(),
-                            Fetch { from: self.id, local_id: r.local_id() });
-      return Err(NotCached)
-    }
+    self.process_messages();
 
-    if self.id == r.memory_id() {
-      return match self.locals[r.local_id()].cell() {
-        LocalCell::Local { type_id, object_ptr } => {
-          if TypeId::of::<T>() == type_id {
-            Ok(unsafe { &*(object_ptr as *const T) })
-          } else {
-            Err(TypeMismatch)
+    let mut a = r.global_address();
+
+    loop {
+      if a.memory_id() == self.id {
+        match self.locals[a.local_id()].cell() {
+          LocalCell::Local { type_id, object_ptr }
+              => return convert_object_ptr!(T, type_id, object_ptr),
+          LocalCell::Moving => return Err(NotCached),
+          LocalCell::Moved(new_a) => {
+            assert!(new_a.memory_id() != self.id);
+            a = new_a;
           }
         }
-        LocalCell::Moving => unimplemented!(),
-        LocalCell::Moved(_) => unimplemented!(),
+      } else {
+        match self.globals.get(a) {
+          Some(&GlobalCell::Local { type_id, object_ptr })
+                => return convert_object_ptr!(T, type_id, object_ptr),
+          Some(&GlobalCell::Moved(new_a)) => a = new_a,
+          None => return Err(NotCached),
+        }
       }
-    }
-
-    match self.globals[r.global_address()] {
-      GlobalCell::Moved(a) => unimplemented!(),
-      GlobalCell::Local { .. } => unimplemented!(),
     }
   }
 
   pub fn load_mut<T: Any>(&mut self, r: &Ref) -> LoadResult<&mut T> {
     self.process_messages();
 
+    let mut a = r.global_address();
+
     if r.memory_id() != self.id {
       return Err(NotCached)
     }
 
-    match self.locals[r.local_id()].cell() {
-      LocalCell::Local { type_id, object_ptr } => {
-        if TypeId::of::<T>() == type_id {
-          Ok(unsafe { &mut *(object_ptr as *mut T) })
-        } else {
-          Err(TypeMismatch)
+    loop {
+      if a.memory_id() == self.id {
+        match self.locals[a.local_id()].cell() {
+          LocalCell::Local { type_id, object_ptr } => {
+            return if TypeId::of::<T>() == type_id {
+              Ok(unsafe { &mut *(object_ptr as *mut T) })
+            } else {
+              Err(TypeMismatch)
+            }
+          }
+          LocalCell::Moving => return Err(NotCached),
+          LocalCell::Moved(new_a) => {
+            assert!(new_a.memory_id() != self.id);
+            a = new_a;
+          }
+        }
+      } else {
+        match self.globals.get(a) {
+          Some(&GlobalCell::Local { .. }) | None => return Err(NotCached),
+          Some(&GlobalCell::Moved(new_a)) => a = new_a,
         }
       }
-      LocalCell::Moving => unimplemented!(),
-      LocalCell::Moved(_) => unimplemented!(),
     }
   }
 
   pub fn is_cached(&mut self, r: &Ref) -> bool {
     self.process_messages();
 
-    if r.memory_id() == self.id || self.globals.is_local(r.global_address()) {
-      true
-    } else {
-      false
+    let mut a = r.global_address();
+
+    loop {
+      if a.memory_id() == self.id {
+        match self.locals[a.local_id()].cell() {
+          LocalCell::Local { .. } => return true,
+          LocalCell::Moving => return false,
+          LocalCell::Moved(new_a) => {
+            assert!(new_a.memory_id() != self.id);
+            a = new_a;
+          }
+        }
+      } else {
+        match self.globals.get(a) {
+          Some(&GlobalCell::Local { .. }) => return true,
+          Some(&GlobalCell::Moved(new_a)) => a = new_a,
+          None => return false,
+        }
+      }
     }
   }
 

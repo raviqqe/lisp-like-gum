@@ -23,13 +23,17 @@ impl GlobalCells {
     }
   }
 
-  pub fn is_local(&self, a: GlobalAddress) -> bool {
-    if let Some(&Local { .. }) = self.cells.get(&a) {
-      true
-    } else {
-      false
-    }
+  pub fn get(&self, a: GlobalAddress) -> Option<&GlobalCell> {
+    self.cells.get(&a)
   }
+
+  // pub fn is_local(&self, a: GlobalAddress) -> bool {
+  //   if let Some(&Local { .. }) = self.cells.get(&a) {
+  //     true
+  //   } else {
+  //     false
+  //   }
+  // }
 
   pub fn delete(&mut self, i: GlobalAddress) {
     let _ = self.cells.remove(&i);

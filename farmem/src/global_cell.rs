@@ -1,4 +1,4 @@
-use std::any::{Any, TypeId};
+use std::any::TypeId;
 
 use alloc::{alloc_memory, free_memory};
 use global_address::GlobalAddress;
@@ -35,21 +35,21 @@ impl GlobalCell {
     }
   }
 
-  pub fn object<T: Any>(&self) -> Option<*const T> {
-    self.object_ptr(TypeId::of::<T>()).map(|p| p as *const T)
-  }
+  // pub fn object<T: Any>(&self) -> Option<*const T> {
+  //   self.object_ptr(TypeId::of::<T>()).map(|p| p as *const T)
+  // }
 
-  pub fn object_mut<T: Any>(&self) -> Option<*mut T> {
-    self.object_ptr(TypeId::of::<T>()).map(|p| p as *mut T)
-  }
+  // pub fn object_mut<T: Any>(&self) -> Option<*mut T> {
+  //   self.object_ptr(TypeId::of::<T>()).map(|p| p as *mut T)
+  // }
 
-  fn object_ptr(&self, t: TypeId) -> Option<usize> {
-    match *self {
-      Local { type_id, object_ptr }
-          => if type_id == t { Some(object_ptr) } else { None },
-      _ => panic!("The object was moved!"),
-    }
-  }
+  // fn object_ptr(&self, t: TypeId) -> Option<usize> {
+  //   match *self {
+  //     Local { type_id, object_ptr }
+  //         => if type_id == t { Some(object_ptr) } else { None },
+  //     _ => panic!("The object was moved!"),
+  //   }
+  // }
 }
 
 impl Drop for GlobalCell {
