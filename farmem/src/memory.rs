@@ -177,7 +177,7 @@ impl Memory {
                              self.type_manager.deserialize(object));
           self.notices.push_back(Notice::Feed(reference));
         }
-        Ack { from, to } => unimplemented!(),
+        Ack { from, to } => self.locals[from].mark_moved(to),
 
         AddWeight { local_id, delta } => {
           self.locals[local_id].add_weight(delta)
