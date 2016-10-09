@@ -59,9 +59,8 @@ impl Memory {
 
   pub fn load<T: Any>(&mut self, r: &Ref) -> LoadResult<&T> {
     if !self.is_cached(r) {
-      self.transceiver.send(
-          r.memory_id(),
-          Fetch { from: self.id, local_id: r.local_id() });
+      self.transceiver.send(r.memory_id(),
+                            Fetch { from: self.id, local_id: r.local_id() });
       return Err(NotCached)
     }
 
