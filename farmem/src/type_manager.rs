@@ -4,7 +4,7 @@ use std::collections::HashMap;
 use std::rc::Rc;
 
 use global_cell::GlobalCell;
-use local_cell::LocalCell;
+use local_cell::WeightedLocalCell;
 use object::Object;
 use reference::Ref;
 use serialized_object::SerializedObject;
@@ -34,11 +34,11 @@ impl TypeManager {
     self.from_builtin_id.insert(any::TypeId::of::<T>(), t);
   }
 
-  pub fn extract_refs(&self, c: &LocalCell) -> Vec<Ref> {
+  pub fn extract_refs(&self, c: &WeightedLocalCell) -> Vec<Ref> {
     self.from_builtin_id[&c.type_id()].extract_refs(c.unknown_object_ptr())
   }
 
-  pub fn serialize(&self, c: &LocalCell) -> SerializedObject {
+  pub fn serialize(&self, c: &WeightedLocalCell) -> SerializedObject {
     self.from_builtin_id[&c.type_id()].serialize(c.unknown_object_ptr())
   }
 

@@ -2,7 +2,7 @@ use std::any::Any;
 use std::collections::BTreeMap;
 use std::ops::{Index, IndexMut};
 
-use local_cell::LocalCell;
+use local_cell::WeightedLocalCell;
 use local_id::LocalId;
 use local_id_manager::LocalIdManager;
 
@@ -10,7 +10,7 @@ use local_id_manager::LocalIdManager;
 
 #[derive(Debug, Default)]
 pub struct LocalCells {
-  local_cells: BTreeMap<LocalId, LocalCell>,
+  local_cells: BTreeMap<LocalId, WeightedLocalCell>,
   id_manager: LocalIdManager,
 }
 
@@ -21,7 +21,7 @@ impl LocalCells {
 
   pub fn store<T: Any>(&mut self, o: T) -> LocalId {
     let i = self.id_manager.new_id();
-    self.local_cells.insert(i, LocalCell::new(o));
+    self.local_cells.insert(i, WeightedLocalCell::new(o));
     i
   }
 
@@ -32,7 +32,7 @@ impl LocalCells {
 }
 
 impl Index<LocalId> for LocalCells {
-  type Output = LocalCell;
+  type Output = WeightedLocalCell;
 
   fn index(&self, i: LocalId) -> &Self::Output {
     self.local_cells.index(&i)
@@ -40,7 +40,7 @@ impl Index<LocalId> for LocalCells {
 }
 
 impl IndexMut<LocalId> for LocalCells {
-  fn index_mut(&mut self, i: LocalId) -> &mut LocalCell {
+  fn index_mut(&mut self, i: LocalId) -> &mut WeightedLocalCell {
     self.local_cells.get_mut(&i).unwrap()
   }
 }

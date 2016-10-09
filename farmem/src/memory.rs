@@ -12,7 +12,7 @@ use global_cells::GlobalCells;
 use global_address::GlobalAddress;
 use load_error::LoadError::*;
 use load_result::LoadResult;
-use local_cell::CellState;
+use local_cell::LocalCell;
 use local_cells::LocalCells;
 use memory_id::MemoryId;
 use message::Message::*;
@@ -66,16 +66,16 @@ impl Memory {
     }
 
     if self.id == r.memory_id() {
-      return match self.locals[r.local_id()].state() {
-        CellState::Local { type_id, object_ptr } => {
+      return match self.locals[r.local_id()].cell() {
+        LocalCell::Local { type_id, object_ptr } => {
           if TypeId::of::<T>() == type_id {
             Ok(unsafe { &*(object_ptr as *const T) })
           } else {
             Err(TypeMismatch)
           }
         }
-        CellState::Moving => unimplemented!(),
-        CellState::Moved(_) => unimplemented!(),
+        LocalCell::Moving => unimplemented!(),
+        LocalCell::Moved(_) => unimplemented!(),
       }
     }
 
@@ -92,16 +92,16 @@ impl Memory {
       return Err(NotCached)
     }
 
-    match self.locals[r.local_id()].state() {
-      CellState::Local { type_id, object_ptr } => {
+    match self.locals[r.local_id()].cell() {
+      LocalCell::Local { type_id, object_ptr } => {
         if TypeId::of::<T>() == type_id {
           Ok(unsafe { &mut *(object_ptr as *mut T) })
         } else {
           Err(TypeMismatch)
         }
       }
-      CellState::Moving => unimplemented!(),
-      CellState::Moved(_) => unimplemented!(),
+      LocalCell::Moving => unimplemented!(),
+      LocalCell::Moved(_) => unimplemented!(),
     }
   }
 

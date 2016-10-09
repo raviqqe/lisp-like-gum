@@ -22,7 +22,7 @@ impl GlobalCell {
   }
 
   // pub fn type_id(&self) -> TypeId {
-  //   match self.state {
+  //   match self.cell {
   //     Local { type_id, .. } => type_id,
   //     _ => panic!("The object was moved!"),
   //   }
