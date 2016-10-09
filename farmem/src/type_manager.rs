@@ -3,7 +3,7 @@ use std::any::Any;
 use std::collections::HashMap;
 use std::rc::Rc;
 
-use cell::Cell;
+use local_cell::LocalCell;
 use object::Object;
 use reference::Ref;
 use serialized_object::SerializedObject;
@@ -33,17 +33,17 @@ impl TypeManager {
     self.from_builtin_id.insert(any::TypeId::of::<T>(), t);
   }
 
-  pub fn extract_refs(&self, c: &Cell) -> Vec<Ref> {
+  pub fn extract_refs(&self, c: &LocalCell) -> Vec<Ref> {
     self.from_builtin_id[&c.type_id()].extract_refs(c.unknown_object_ptr())
   }
 
-  pub fn serialize(&self, c: &Cell) -> SerializedObject {
+  pub fn serialize(&self, c: &LocalCell) -> SerializedObject {
     self.from_builtin_id[&c.type_id()].serialize(c.unknown_object_ptr())
   }
 
-  pub fn deserialize(&self, s: SerializedObject) -> Cell {
+  pub fn deserialize(&self, s: SerializedObject) -> LocalCell {
     let t = &self.from_id[&s.type_id()];
-    let c = Cell::uninitialized(t.size(), t.builtin_id());
+    let c = LocalCell::uninitialized(t.size(), t.builtin_id());
     t.deserialize(s.data(), c.unknown_object_ptr());
     c
   }

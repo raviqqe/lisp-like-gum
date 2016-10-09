@@ -5,13 +5,13 @@ use mpi;
 use mpi::environment::Universe;
 use mpi::traits::*;
 
-use cell::{Cell, CellState};
+use local_cell::{LocalCell, CellState};
 use demand;
 use demand::FriendlyDemand;
 use global_address::GlobalAddress;
 use load_error::LoadError::*;
 use load_result::LoadResult;
-use local_cells::LocalCells;
+use local_cells::LocalLocalCells;
 use memory_id::MemoryId;
 use message::Message::*;
 use notice::Notice;
@@ -25,8 +25,8 @@ use weight::Weight;
 
 pub struct Memory {
   id: MemoryId,
-  locals: LocalCells,
-  globals: BTreeMap<GlobalAddress, Cell>,
+  locals: LocalLocalCells,
+  globals: BTreeMap<GlobalAddress, LocalCell>,
   type_manager: TypeManager,
   transceiver: Transceiver,
   notices: VecDeque<Notice>,
@@ -39,7 +39,7 @@ impl Memory {
 
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
-      locals: LocalCells::new(),
+      locals: LocalLocalCells::new(),
       globals: BTreeMap::new(),
       type_manager: TypeManager::new(),
       transceiver: Transceiver::new(u.world()),

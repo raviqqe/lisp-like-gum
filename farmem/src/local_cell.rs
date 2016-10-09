@@ -12,7 +12,7 @@ use self::CellState::*;
 
 
 #[derive(Debug)]
-pub struct Cell {
+pub struct LocalCell {
   weight: Weight,
   state: CellState,
 }
@@ -24,15 +24,15 @@ pub enum CellState {
   Moved(GlobalAddress),
 }
 
-impl Cell {
+impl LocalCell {
   pub fn new<T: Any>(o: T) -> Self {
-    let c = Cell::uninitialized(size_of::<T>(), TypeId::of::<T>());
+    let c = LocalCell::uninitialized(size_of::<T>(), TypeId::of::<T>());
     unsafe { *(c.unknown_object_ptr() as *mut T) = o }
     c
   }
 
-  pub fn uninitialized(s: usize, t: TypeId) -> Cell {
-    Cell {
+  pub fn uninitialized(s: usize, t: TypeId) -> LocalCell {
+    LocalCell {
       weight: Weight::default(),
       state: Local { type_id: t, object_ptr: alloc_memory(s) },
     }
@@ -107,7 +107,7 @@ impl Cell {
   }
 }
 
-impl Drop for Cell {
+impl Drop for LocalCell {
   fn drop(&mut self) {
     if let Local { object_ptr, .. } = self.state {
       free_memory(object_ptr)
