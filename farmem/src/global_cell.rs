@@ -1,11 +1,7 @@
 use std::any::{Any, TypeId};
-use std::mem::size_of;
 
 use alloc::{alloc_memory, free_memory};
 use global_address::GlobalAddress;
-use serialized_object::SerializedObject;
-use type_manager::TypeManager;
-use weight::Weight;
 
 use self::GlobalCell::*;
 
