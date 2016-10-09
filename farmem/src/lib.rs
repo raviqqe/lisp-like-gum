@@ -15,6 +15,7 @@ mod alloc;
 mod local_cell;
 mod demand;
 mod global_address;
+mod global_cell;
 mod load_error;
 mod load_result;
 mod local_cells;
