@@ -35,9 +35,3 @@ impl Index<GlobalAddress> for GlobalCells {
     self.cells.index(&a)
   }
 }
-
-impl IndexMut<GlobalAddress> for GlobalCells {
-  fn index_mut(&mut self, a: GlobalAddress) -> &mut GlobalCell {
-    self.cells.get_mut(&a).unwrap()
-  }
-}
