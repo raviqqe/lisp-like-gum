@@ -11,7 +11,7 @@ use demand::FriendlyDemand;
 use global_address::GlobalAddress;
 use load_error::LoadError::*;
 use load_result::LoadResult;
-use local_cells::LocalLocalCells;
+use local_cells::LocalCells;
 use memory_id::MemoryId;
 use message::Message::*;
 use notice::Notice;
@@ -25,7 +25,7 @@ use weight::Weight;
 
 pub struct Memory {
   id: MemoryId,
-  locals: LocalLocalCells,
+  locals: LocalCells,
   globals: BTreeMap<GlobalAddress, LocalCell>,
   type_manager: TypeManager,
   transceiver: Transceiver,
@@ -39,7 +39,7 @@ impl Memory {
 
     Memory {
       id: MemoryId::new(u.world().rank() as u64),
-      locals: LocalLocalCells::new(),
+      locals: LocalCells::new(),
       globals: BTreeMap::new(),
       type_manager: TypeManager::new(),
       transceiver: Transceiver::new(u.world()),

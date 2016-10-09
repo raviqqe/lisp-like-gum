@@ -9,14 +9,14 @@ use local_id_manager::LocalIdManager;
 
 
 #[derive(Debug, Default)]
-pub struct LocalLocalCells {
+pub struct LocalCells {
   local_cells: BTreeMap<LocalId, LocalCell>,
   id_manager: LocalIdManager,
 }
 
-impl LocalLocalCells {
+impl LocalCells {
   pub fn new() -> Self {
-    LocalLocalCells::default()
+    LocalCells::default()
   }
 
   pub fn store<T: Any>(&mut self, o: T) -> LocalId {
@@ -31,7 +31,7 @@ impl LocalLocalCells {
   }
 }
 
-impl Index<LocalId> for LocalLocalCells {
+impl Index<LocalId> for LocalCells {
   type Output = LocalCell;
 
   fn index(&self, i: LocalId) -> &Self::Output {
@@ -39,7 +39,7 @@ impl Index<LocalId> for LocalLocalCells {
   }
 }
 
-impl IndexMut<LocalId> for LocalLocalCells {
+impl IndexMut<LocalId> for LocalCells {
   fn index_mut(&mut self, i: LocalId) -> &mut LocalCell {
     self.local_cells.get_mut(&i).unwrap()
   }
