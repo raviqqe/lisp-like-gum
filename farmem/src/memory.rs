@@ -123,14 +123,9 @@ impl Memory {
     self.transceiver.send_at_random(Demand { from: self.id });
   }
 
-  pub fn feed(&self, d: demand::Demand, r: Ref) {
-    let i = r.local_id();
-    let m = Move {
-      reference: r,
-      object: self.type_manager.serialize(&self.locals[i]),
-    };
-
-    self.transceiver.send(d.memory_id(), m);
+  pub fn feed(&mut self, d: demand::Demand, r: Ref) {
+    let o = self.locals[r.local_id()].mark_moving(&self.type_manager);
+    self.transceiver.send(d.memory_id(), Move { reference: r, object: o });
   }
 
   pub fn clone_ref(&self, r: &mut Ref) -> Ref {
